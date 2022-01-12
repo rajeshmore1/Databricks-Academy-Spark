@@ -1,0 +1,209 @@
+# Databricks notebook source
+# INCLUDE_HEADER_TRUE
+# INCLUDE_FOOTER_TRUE
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Complex Types
+# MAGIC 
+# MAGIC Explore built-in functions for working with collections and strings.
+# MAGIC 
+# MAGIC ##### Objectives
+# MAGIC 1. Apply collection functions to process arrays
+# MAGIC 1. Union DataFrames together
+# MAGIC 
+# MAGIC ##### Methods
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: `unionByName`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-In Functions</a>:
+# MAGIC   - Aggregate: `collect_set`
+# MAGIC   - Collection: `array_contains`, `element_at`, `explode`
+# MAGIC   - String: `split`
+
+# COMMAND ----------
+
+# MAGIC %run ./Includes/Classroom-Setup
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC In this demo, we're going to use the sales data set.
+
+# COMMAND ----------
+
+df = spark.read.parquet(salesPath)
+display(df)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### String Functions
+# MAGIC Here are some of the built-in functions available for manipulating strings.
+# MAGIC 
+# MAGIC | Method | Description |
+# MAGIC | --- | --- |
+# MAGIC | translate | Translate any character in the src by a character in replaceString |
+# MAGIC | regexp_replace | Replace all substrings of the specified string value that match regexp with rep |
+# MAGIC | regexp_extract | Extract a specific group matched by a Java regex, from the specified string column |
+# MAGIC | ltrim | Removes the leading space characters from the specified string column |
+# MAGIC | lower | Converts a string column to lowercase |
+# MAGIC | split | Splits str around matches of the given pattern |
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Collection Functions
+# MAGIC 
+# MAGIC Here are some of the built-in functions available for working with arrays.
+# MAGIC 
+# MAGIC | Method | Description |
+# MAGIC | --- | --- |
+# MAGIC | array_contains | Returns null if the array is null, true if the array contains value, and false otherwise. |
+# MAGIC | element_at | Returns element of array at given index. Array elements are numbered starting with **1**. |
+# MAGIC | explode | Creates a new row for each element in the given array or map column. |
+# MAGIC | collect_set | Returns a set of objects with duplicate elements eliminated. |
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Aggregate Functions
+# MAGIC 
+# MAGIC Here are some of the built-in aggregate functions available for creating arrays, typically from GroupedData.
+# MAGIC 
+# MAGIC | Method | Description |
+# MAGIC | --- | --- |
+# MAGIC | collect_list | Returns an array consisting of all values within the group. |
+# MAGIC | collect_set | Returns an array consisting of all unique values within the group. |
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # User Purchases
+# MAGIC 
+# MAGIC List all size and quality options purchased by each buyer.
+# MAGIC 1. Extract item details from purchases
+# MAGIC 2. Extract size and quality options from mattress purchases
+# MAGIC 3. Extract size and quality options from pillow purchases
+# MAGIC 4. Combine data for mattress and pillows
+# MAGIC 5. List all size and quality options bought by each user
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### 1. Extract item details from purchases
+# MAGIC 
+# MAGIC - Explode the **`items`** field in **`df`** with the results replacing the existing **`items`** field
+# MAGIC - Select the **`email`** and **`item.item_name`** fields
+# MAGIC - Split the words in **`item_name`** into an array and alias the column to "details"
+# MAGIC 
+# MAGIC Assign the resulting DataFrame to **`detailsDF`**.
+
+# COMMAND ----------
+
+from pyspark.sql.functions import *
+
+detailsDF = (df
+             .withColumn("items", explode("items"))
+             .select("email", "items.item_name")
+             .withColumn("details", split(col("item_name"), " "))
+            )
+display(detailsDF)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC So you can see that our **`details`** column is now an array containing the quality, size, and object type.
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### 2. Extract size and quality options from mattress purchases
+# MAGIC 
+# MAGIC - Filter **`detailsDF`** for records where **`details`** contains "Mattress"
+# MAGIC - Add a **`size`** column by extracting the element at position 2
+# MAGIC - Add a **`quality`** column by extracting the element at position 1
+# MAGIC 
+# MAGIC Save the result as **`mattressDF`**.
+
+# COMMAND ----------
+
+mattressDF = (detailsDF
+              .filter(array_contains(col("details"), "Mattress"))
+              .withColumn("size", element_at(col("details"), 2))
+              .withColumn("quality", element_at(col("details"), 1))
+             )
+display(mattressDF)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Next we're going to do the same thing for pillow purchases.
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### 3. Extract size and quality options from pillow purchases
+# MAGIC - Filter **`detailsDF`** for records where **`details`** contains "Pillow"
+# MAGIC - Add a **`size`** column by extracting the element at position 1
+# MAGIC - Add a **`quality`** column by extracting the element at position 2
+# MAGIC 
+# MAGIC Note the positions of **`size`** and **`quality`** are switched for mattresses and pillows.
+# MAGIC 
+# MAGIC Save result as **`pillowDF`**.
+
+# COMMAND ----------
+
+pillowDF = (detailsDF
+            .filter(array_contains(col("details"), "Pillow"))
+            .withColumn("size", element_at(col("details"), 1))
+            .withColumn("quality", element_at(col("details"), 2))
+           )
+display(pillowDF)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### 4. Combine data for mattress and pillows
+# MAGIC 
+# MAGIC - Perform a union on **`mattressDF`** and **`pillowDF`** by column names
+# MAGIC - Drop the **`details`** column
+# MAGIC 
+# MAGIC Save the result as **`unionDF`**.
+# MAGIC 
+# MAGIC <img src="https://files.training.databricks.com/images/icon_warn_32.png" alt="Warning"> The DataFrame <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.union.html" target="_blank">`union`</a> method resolves columns by position, as in standard SQL. You should use it only if the two DataFrames have exactly the same schema, including the column order. In contrast, the DataFrame <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.unionByName.html" target="_blank">`unionByName`</a> method resolves columns by name.
+
+# COMMAND ----------
+
+unionDF = mattressDF.unionByName(pillowDF).drop("details")
+display(unionDF)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### 5. List all size and quality options bought by each user
+# MAGIC 
+# MAGIC - Group rows in **`unionDF`** by **`email`**
+# MAGIC   - Collect the set of all items in **`size`** for each user and alias the column to "size options"
+# MAGIC   - Collect the set of all items in **`quality`** for each user and alias the column to "quality options"
+# MAGIC 
+# MAGIC Save the result as **`optionsDF`**.
+
+# COMMAND ----------
+
+optionsDF = (unionDF
+             .groupBy("email")
+             .agg(collect_set("size").alias("size options"),
+                  collect_set("quality").alias("quality options"))
+            )
+display(optionsDF)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Clean up classroom
+# MAGIC 
+# MAGIC And lastly, we'll clean up the classroom.
+
+# COMMAND ----------
+
+# MAGIC %run ./Includes/Classroom-Cleanup
