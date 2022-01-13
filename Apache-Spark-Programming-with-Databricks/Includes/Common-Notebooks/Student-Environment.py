@@ -46,11 +46,10 @@
 # MAGIC 
 # MAGIC def getWorkingDir() -> str:
 # MAGIC   import re
-# MAGIC   langType = "p" # for python
 # MAGIC   lessonName = re.sub("[^a-zA-Z0-9]", "_", getLessonName())
 # MAGIC   moduleName = re.sub(r"[^a-zA-Z0-9]", "_", getModuleName())
 # MAGIC   userhome = getUserhome()
-# MAGIC   return f"{userhome}/{moduleName}/{lessonName}/{langType}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
+# MAGIC   return f"{userhome}/dbacademy/{moduleName}/{lessonName}/".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
 # MAGIC 
 # MAGIC ############################################
 # MAGIC # USER DATABASE FUNCTIONS
@@ -58,11 +57,10 @@
 # MAGIC 
 # MAGIC def getDatabaseName(username:str, moduleName:str, lessonName:str) -> str:
 # MAGIC   import re
-# MAGIC   user = re.sub("[^a-zA-Z0-9]", "", username)
+# MAGIC   user = re.sub("[^a-zA-Z0-9]", "_", username)
 # MAGIC   module = re.sub("[^a-zA-Z0-9]", "_", moduleName)
 # MAGIC   lesson = re.sub("[^a-zA-Z0-9]", "_", lessonName)
-# MAGIC   langType = "py" # for python
-# MAGIC   databaseName = f"{user}_{module}_{lesson}_{langType}".lower()
+# MAGIC   databaseName = f"dbacademy_{user}_{module}_{lesson}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
 # MAGIC   return databaseName
 # MAGIC 
 # MAGIC 
@@ -236,11 +234,10 @@
 # MAGIC }
 # MAGIC 
 # MAGIC def getWorkingDir(): String = {
-# MAGIC   val langType = "s" // for scala
 # MAGIC   val lessonName = getLessonName().replaceAll("[^a-zA-Z0-9]", "_")
 # MAGIC   val moduleName = getModuleName().replaceAll("[^a-zA-Z0-9]", "_")
 # MAGIC   val userhome = getUserhome()
-# MAGIC   return f"${userhome}/${moduleName}/${lessonName}/${langType}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").toLowerCase()
+# MAGIC   return f"${userhome}/dbacademy/${moduleName}/${lessonName}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").toLowerCase()
 # MAGIC }
 # MAGIC 
 # MAGIC //**********************************
@@ -248,11 +245,10 @@
 # MAGIC //**********************************
 # MAGIC 
 # MAGIC def getDatabaseName(username:String, moduleName:String, lessonName:String):String = {
-# MAGIC   val user = username.replaceAll("[^a-zA-Z0-9]", "")
+# MAGIC   val user = username.replaceAll("[^a-zA-Z0-9]", "_")
 # MAGIC   val module = moduleName.replaceAll("[^a-zA-Z0-9]", "_")
 # MAGIC   val lesson = lessonName.replaceAll("[^a-zA-Z0-9]", "_")
-# MAGIC   val langType = "scala" // for scala
-# MAGIC   val databaseName = f"${user}_${module}_${lesson}_${langType}".toLowerCase
+# MAGIC   val databaseName = f"dbacademy_${user}_${module}_${lesson}".toLowerCase
 # MAGIC   return databaseName
 # MAGIC }
 # MAGIC 
