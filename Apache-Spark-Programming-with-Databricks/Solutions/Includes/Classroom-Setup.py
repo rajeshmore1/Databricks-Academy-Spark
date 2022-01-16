@@ -1,12 +1,17 @@
 # Databricks notebook source
-module_name = "spark-programming"
-spark.conf.set("com.databricks.training.module-name", module_name)
-
-salesPath = "/mnt/training/ecommerce/sales/sales.parquet"
-usersPath = "/mnt/training/ecommerce/users/users.parquet"
-eventsPath = "/mnt/training/ecommerce/events/events.parquet"
-productsPath = "/mnt/training/ecommerce/products/products.parquet"
+# MAGIC %run ./Common-Notebooks/Common
 
 # COMMAND ----------
 
-# MAGIC %run ./Common-Notebooks/Common
+salesPath =    f"{datasetsDir}/sales/sales.parquet"
+spark.sql(f"SET c.sales_path = {salesPath}")
+
+usersPath =    f"{datasetsDir}/users/users.parquet"
+spark.sql(f"SET c.users_path = {usersPath}")
+
+eventsPath =   f"{datasetsDir}/events/events.parquet"
+spark.sql(f"SET c.events_path = {eventsPath}")
+
+productsPath = f"{datasetsDir}/products/products.parquet"
+spark.sql(f"SET c.products_path = {productsPath}")
+
