@@ -14,12 +14,12 @@
 # MAGIC 1. Configure default shuffle partitions
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: `repartition`, `coalesce`, `rdd.getNumPartitions`
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.SparkConf.html?#pyspark.SparkConf" target="_blank">SparkConf</a>: `get`, `set`
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#spark-session-apis" target="_blank">SparkSession</a>: `spark.sparkContext.defaultParallelism`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: **`repartition`**, **`coalesce`**, **`rdd.getNumPartitions`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.SparkConf.html?#pyspark.SparkConf" target="_blank">SparkConf</a>: **`get`**, **`set`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#spark-session-apis" target="_blank">SparkSession</a>: **`spark.sparkContext.defaultParallelism`**
 # MAGIC 
 # MAGIC ##### SparkConf Parameters
-# MAGIC - `spark.sql.shuffle.partitions`, `spark.sql.adaptive.enabled`
+# MAGIC - **`spark.sql.shuffle.partitions`**, **`spark.sql.adaptive.enabled`**
 
 # COMMAND ----------
 
@@ -29,18 +29,18 @@
 
 # MAGIC %md ### Get partitions and cores
 # MAGIC 
-# MAGIC Use the `rdd` method `getNumPartitions` to get the number of DataFrame partitions.
+# MAGIC Use the **`rdd`** method **`getNumPartitions`** to get the number of DataFrame partitions.
 
 # COMMAND ----------
 
-df = spark.read.parquet(eventsPath)
+df = spark.read.parquet(events_path)
 df.rdd.getNumPartitions()
 
 # COMMAND ----------
 
-# MAGIC %md Access `SparkContext` through `SparkSession` to get the number of cores or slots.
+# MAGIC %md Access **`SparkContext`** through **`SparkSession`** to get the number of cores or slots.
 # MAGIC 
-# MAGIC Use the `defaultParallelism` attribute to get the number of cores in a cluster.
+# MAGIC Use the **`defaultParallelism`** attribute to get the number of cores in a cluster.
 
 # COMMAND ----------
 
@@ -48,7 +48,7 @@ print(spark.sparkContext.defaultParallelism)
 
 # COMMAND ----------
 
-# MAGIC %md `SparkContext` is also provided in Databricks notebooks as the variable `sc`.
+# MAGIC %md **`SparkContext`** is also provided in Databricks notebooks as the variable **`sc`**.
 
 # COMMAND ----------
 
@@ -58,12 +58,12 @@ print(sc.defaultParallelism)
 
 # MAGIC %md ### Repartition DataFrame
 # MAGIC 
-# MAGIC There are two methods available to repartition a DataFrame: `repartition` and `coalesce`.
+# MAGIC There are two methods available to repartition a DataFrame: **`repartition`** and **`coalesce`**.
 
 # COMMAND ----------
 
 # MAGIC %md #### `repartition`
-# MAGIC Returns a new DataFrame that has exactly `n` partitions.
+# MAGIC Returns a new DataFrame that has exactly **`n`** partitions.
 # MAGIC 
 # MAGIC - Wide transformation
 # MAGIC - Pro: Evenly balances partition sizes  
@@ -71,16 +71,16 @@ print(sc.defaultParallelism)
 
 # COMMAND ----------
 
-repartitionedDF = df.repartition(8)
+repartitioned_df = df.repartition(8)
 
 # COMMAND ----------
 
-repartitionedDF.rdd.getNumPartitions()
+repartitioned_df.rdd.getNumPartitions()
 
 # COMMAND ----------
 
 # MAGIC %md #### `coalesce`
-# MAGIC Returns a new DataFrame that has exactly `n` partitions, when fewer partitions are requested.
+# MAGIC Returns a new DataFrame that has exactly **`n`** partitions, when fewer partitions are requested.
 # MAGIC 
 # MAGIC If a larger number of partitions is requested, it will stay at the current number of partitions.
 # MAGIC 
@@ -92,17 +92,17 @@ repartitionedDF.rdd.getNumPartitions()
 
 # COMMAND ----------
 
-coalesceDF = df.coalesce(8)
+coalesce_df = df.coalesce(8)
 
 # COMMAND ----------
 
-coalesceDF.rdd.getNumPartitions()
+coalesce_df.rdd.getNumPartitions()
 
 # COMMAND ----------
 
 # MAGIC %md ### Configure default shuffle partitions
 # MAGIC 
-# MAGIC Use the SparkSession's `conf` attribute to get and set dynamic Spark configuration properties. The `spark.sql.shuffle.partitions` property determines the number of partitions that result from a shuffle. Let's check its default value:
+# MAGIC Use the SparkSession's **`conf`** attribute to get and set dynamic Spark configuration properties. The **`spark.sql.shuffle.partitions`** property determines the number of partitions that result from a shuffle. Let's check its default value:
 
 # COMMAND ----------
 
@@ -134,9 +134,9 @@ print(spark.conf.get("spark.sql.shuffle.partitions"))
 # MAGIC 
 # MAGIC <img src="https://files.training.databricks.com/images/aspwd/partitioning_aqe.png" width="60%" />
 # MAGIC 
-# MAGIC In Spark 3, <a href="https://spark.apache.org/docs/latest/sql-performance-tuning.html#adaptive-query-execution" target="_blank">AQE</a> is now able to <a href="https://databricks.com/blog/2020/05/29/adaptive-query-execution-speeding-up-spark-sql-at-runtime.html" target="_blank"> dynamically coalesce shuffle partitions</a> at runtime. This means that you can set `spark.sql.shuffle.partitions` based on the largest data set your application processes and allow AQE to reduce the number of partitions automatically when there is less data to process.
+# MAGIC In Spark 3, <a href="https://spark.apache.org/docs/latest/sql-performance-tuning.html#adaptive-query-execution" target="_blank">AQE</a> is now able to <a href="https://databricks.com/blog/2020/05/29/adaptive-query-execution-speeding-up-spark-sql-at-runtime.html" target="_blank"> dynamically coalesce shuffle partitions</a> at runtime. This means that you can set **`spark.sql.shuffle.partitions`** based on the largest data set your application processes and allow AQE to reduce the number of partitions automatically when there is less data to process.
 # MAGIC 
-# MAGIC The `spark.sql.adaptive.enabled` configuration option controls whether AQE is turned on/off.
+# MAGIC The **`spark.sql.adaptive.enabled`** configuration option controls whether AQE is turned on/off.
 
 # COMMAND ----------
 

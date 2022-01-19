@@ -12,7 +12,7 @@
 # MAGIC Process streaming data to display the total active users by traffic source with a 1 hour window.
 # MAGIC 1. Cast to timestamp and add watermark for 2 hours
 # MAGIC 2. Aggregate active users by traffic source for 1 hour windows
-# MAGIC 3. Execute query with `display` and plot results
+# MAGIC 3. Execute query with **`display`** and plot results
 # MAGIC 5. Use query name to stop streaming query
 
 # COMMAND ----------
@@ -29,13 +29,13 @@
 schema = "device STRING, ecommerce STRUCT<purchase_revenue_in_usd: DOUBLE, total_item_quantity: BIGINT, unique_items: BIGINT>, event_name STRING, event_previous_timestamp BIGINT, event_timestamp BIGINT, geo STRUCT<city: STRING, state: STRING>, items ARRAY<STRUCT<coupon: STRING, item_id: STRING, item_name: STRING, item_revenue_in_usd: DOUBLE, price_in_usd: DOUBLE, quantity: BIGINT>>, traffic_source STRING, user_first_touch_timestamp BIGINT, user_id STRING"
 
 # Directory of hourly events logged from the BedBricks website on July 3, 2020
-hourlyEventsPath = f"{datasetsDir}/events/events-2020-07-03.json"
+hourly_events_path = f"{datasets_dir}/events/events-2020-07-03.json"
 
 df = (spark
       .readStream
       .schema(schema)
       .option("maxFilesPerTrigger", 1)
-      .json(hourlyEventsPath)
+      .json(hourly_events_path)
      )
 
 # COMMAND ----------
@@ -44,12 +44,12 @@ df = (spark
 # MAGIC - Add a **`createdAt`** column by dividing **`event_timestamp`** by 1M and casting to timestamp
 # MAGIC - Set a watermark of 2 hours on the **`createdAt`** column
 # MAGIC 
-# MAGIC Assign the resulting DataFrame to **`eventsDF`**.
+# MAGIC Assign the resulting DataFrame to **`events_df`**.
 
 # COMMAND ----------
 
 # TODO
-eventsDF = (df.FILL_IN
+events_df = (df.FILL_IN
 )
 
 # COMMAND ----------
@@ -58,7 +58,7 @@ eventsDF = (df.FILL_IN
 
 # COMMAND ----------
 
-assert "StructField(createdAt,TimestampType,true" in str(eventsDF.schema)
+assert "StructField(createdAt,TimestampType,true" in str(events_df.schema)
 
 # COMMAND ----------
 
@@ -69,14 +69,14 @@ assert "StructField(createdAt,TimestampType,true" in str(eventsDF.schema)
 # MAGIC - Select **`traffic_source`**, **`active_users`**, and the **`hour`** extracted from **`window.start`** with an alias of "hour"
 # MAGIC - Sort by **`hour`** in ascending order
 # MAGIC 
-# MAGIC Assign the resulting DataFrame to **`trafficDF`**.
+# MAGIC Assign the resulting DataFrame to **`traffic_df`**.
 
 # COMMAND ----------
 
 # TODO
 spark.FILL_IN
 
-trafficDF = (eventsDF.FILL_IN
+traffic_df = (eventsDF.FILL_IN
 )
 
 # COMMAND ----------
@@ -85,13 +85,13 @@ trafficDF = (eventsDF.FILL_IN
 
 # COMMAND ----------
 
-assert str(trafficDF.schema) == "StructType(List(StructField(traffic_source,StringType,true),StructField(active_users,LongType,false),StructField(hour,IntegerType,true)))"
+assert str(traffic_df.schema) == "StructType(List(StructField(traffic_source,StringType,true),StructField(active_users,LongType,false),StructField(hour,IntegerType,true)))"
 
 # COMMAND ----------
 
 # MAGIC %md ### 3. Execute query with display() and plot results
-# MAGIC - Use `display` to start **`trafficDF`** as a streaming query and display the resulting memory sink
-# MAGIC   - Assign "hourly_traffic" as the name of the query by seting the **`streamName`** parameter of `display`
+# MAGIC - Use **`display`** to start **`traffic_df`** as a streaming query and display the resulting memory sink
+# MAGIC   - Assign "hourly_traffic" as the name of the query by seting the **`streamName`** parameter of **`display`**
 # MAGIC - Plot the streaming query results as a bar graph
 # MAGIC - Configure the following plot options:
 # MAGIC   - Keys: **`hour`**
@@ -106,7 +106,7 @@ assert str(trafficDF.schema) == "StructType(List(StructField(traffic_source,Stri
 
 # MAGIC %md **CHECK YOUR WORK**
 # MAGIC 
-# MAGIC - The bar chart should plot `hour` on the x-axis and `active_users` on the y-axis
+# MAGIC - The bar chart should plot **`hour`** on the x-axis and **`active_users`** on the y-axis
 # MAGIC - Six bars should appear at every hour for all traffic sources
 # MAGIC - The chart should stop at hour 23
 
@@ -119,7 +119,7 @@ assert str(trafficDF.schema) == "StructType(List(StructField(traffic_source,Stri
 # COMMAND ----------
 
 # TODO
-untilStreamIsReady("hourly_traffic")
+until_stream_is_ready("hourly_traffic")
 
 for s in FILL_IN:
 

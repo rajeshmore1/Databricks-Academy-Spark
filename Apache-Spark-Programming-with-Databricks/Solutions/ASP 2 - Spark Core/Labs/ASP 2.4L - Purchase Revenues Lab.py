@@ -19,8 +19,8 @@
 # MAGIC 4. Drop unneeded column
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - DataFrame: `select`, `drop`, `withColumn`, `filter`, `dropDuplicates`
-# MAGIC - Column: `isNotNull`
+# MAGIC - DataFrame: **`select`**, **`drop`**, **`withColumn`**, **`filter`**, **`dropDuplicates`**
+# MAGIC - Column: **`isNotNull`**
 
 # COMMAND ----------
 
@@ -28,8 +28,8 @@
 
 # COMMAND ----------
 
-eventsDF = spark.read.parquet(eventsPath)
-display(eventsDF)
+events_df = spark.read.parquet(events_path)
+display(events_df)
 
 # COMMAND ----------
 
@@ -41,8 +41,8 @@ display(eventsDF)
 # ANSWER
 from pyspark.sql.functions import col
 
-revenueDF = eventsDF.withColumn("revenue", col("ecommerce.purchase_revenue_in_usd"))
-display(revenueDF)
+revenue_df = events_df.withColumn("revenue", col("ecommerce.purchase_revenue_in_usd"))
+display(revenue_df)
 
 # COMMAND ----------
 
@@ -51,7 +51,7 @@ display(revenueDF)
 # COMMAND ----------
 
 expected1 = [5830.0, 5485.0, 5289.0, 5219.1, 5180.0, 5175.0, 5125.0, 5030.0, 4985.0, 4985.0]
-result1 = [row.revenue for row in revenueDF.sort(col("revenue").desc_nulls_last()).limit(10).collect()]
+result1 = [row.revenue for row in revenue_df.sort(col("revenue").desc_nulls_last()).limit(10).collect()]
 
 assert(expected1 == result1)
 
@@ -63,8 +63,8 @@ assert(expected1 == result1)
 # COMMAND ----------
 
 # ANSWER
-purchasesDF = revenueDF.filter(col("revenue").isNotNull())
-display(purchasesDF)
+purchases_df = revenue_df.filter(col("revenue").isNotNull())
+display(purchases_df)
 
 # COMMAND ----------
 
@@ -72,12 +72,12 @@ display(purchasesDF)
 
 # COMMAND ----------
 
-assert purchasesDF.filter(col("revenue").isNull()).count() == 0, "Nulls in 'revenue' column"
+assert purchases_df.filter(col("revenue").isNull()).count() == 0, "Nulls in 'revenue' column"
 
 # COMMAND ----------
 
 # MAGIC %md ### 3. Check what types of events have revenue
-# MAGIC Find unique **`event_name`** values in **`purchasesDF`** in one of two ways:
+# MAGIC Find unique **`event_name`** values in **`purchases_df`** in one of two ways:
 # MAGIC - Select "event_name" and get distinct records
 # MAGIC - Drop duplicate records based on the "event_name" only
 # MAGIC 
@@ -88,12 +88,12 @@ assert purchasesDF.filter(col("revenue").isNull()).count() == 0, "Nulls in 'reve
 # ANSWER
 
 # Method 1
-distinctDF1 = purchasesDF.select("event_name").distinct()
+distinct_df1 = purchases_df.select("event_name").distinct()
 
 # Method 2
-distinctDF2 = purchasesDF.dropDuplicates(["event_name"])
+distinct_df2 = purchases_df.dropDuplicates(["event_name"])
 
-display(distinctDF1)
+display(distinct_df1)
 
 # COMMAND ----------
 
@@ -104,8 +104,8 @@ display(distinctDF1)
 # COMMAND ----------
 
 # ANSWER
-finalDF = purchasesDF.drop("event_name")
-display(finalDF)
+final_df = purchases_df.drop("event_name")
+display(final_df)
 
 # COMMAND ----------
 
@@ -115,8 +115,8 @@ display(finalDF)
 
 expected_columns = {"device", "ecommerce", "event_previous_timestamp", "event_timestamp",
                     "geo", "items", "revenue", "traffic_source",
-                    "user_first_touch_timestamp", "user_id"}
-assert(set(finalDF.columns) == expected_columns)
+                   "user_first_touch_timestamp", "user_id"}
+assert(set(final_df.columns) == expected_columns)
 
 # COMMAND ----------
 
@@ -125,13 +125,13 @@ assert(set(finalDF.columns) == expected_columns)
 # COMMAND ----------
 
 # ANSWER
-finalDF = (eventsDF
+final_df = (events_df
            .withColumn("revenue", col("ecommerce.purchase_revenue_in_usd"))
            .filter(col("revenue").isNotNull())
            .drop("event_name")
           )
 
-display(finalDF)
+display(final_df)
 
 # COMMAND ----------
 
@@ -139,14 +139,14 @@ display(finalDF)
 
 # COMMAND ----------
 
-assert(finalDF.count() == 180678)
+assert(final_df.count() == 180678)
 
 # COMMAND ----------
 
 expected_columns = {"device", "ecommerce", "event_previous_timestamp", "event_timestamp",
                     "geo", "items", "revenue", "traffic_source",
                     "user_first_touch_timestamp", "user_id"}
-assert(set(finalDF.columns) == expected_columns)
+assert(set(final_df.columns) == expected_columns)
 
 # COMMAND ----------
 

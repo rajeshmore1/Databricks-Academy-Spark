@@ -34,36 +34,36 @@
 # COMMAND ----------
 
 # sale transactions at BedBricks
-salesDF = spark.read.parquet(salesPath)
-display(salesDF)
+sales_df = spark.read.parquet(sales_path)
+display(sales_df)
 
 # COMMAND ----------
 
 # user IDs and emails at BedBricks
-usersDF = spark.read.parquet(usersPath)
-display(usersDF)
+users_df = spark.read.parquet(users_path)
+display(users_df)
 
 # COMMAND ----------
 
 # events logged on the BedBricks website
-eventsDF = spark.read.parquet(eventsPath)
-display(eventsDF)
+events_df = spark.read.parquet(events_path)
+display(events_df)
 
 # COMMAND ----------
 
 # MAGIC %md ### 1-A: Get emails of converted users from transactions
-# MAGIC - Select the **`email`** column in **`salesDF`** and remove duplicates
+# MAGIC - Select the **`email`** column in **`sales_df`** and remove duplicates
 # MAGIC - Add a new column **`converted`** with the value **`True`** for all rows
 # MAGIC 
-# MAGIC Save the result as **`convertedUsersDF`**.
+# MAGIC Save the result as **`converted_users_df`**.
 
 # COMMAND ----------
 
 # TODO
 from pyspark.sql.functions import *
-convertedUsersDF = (salesDF.FILL_IN
+converted_users_df = (sales_df.FILL_IN
 )
-display(convertedUsersDF)
+display(converted_users_df)
 
 # COMMAND ----------
 
@@ -73,32 +73,32 @@ display(convertedUsersDF)
 
 # COMMAND ----------
 
-expectedColumns = ["email", "converted"]
+expected_columns = ["email", "converted"]
 
-expectedCount = 210370
+expected_count = 210370
 
-assert convertedUsersDF.columns == expectedColumns, "convertedUsersDF does not have the correct columns"
+assert converted_users_df.columns == expected_columns, "converted_users_df does not have the correct columns"
 
-assert convertedUsersDF.count() == expectedCount, "convertedUsersDF does not have the correct number of rows"
+assert converted_users_df.count() == expected_count, "converted_users_df does not have the correct number of rows"
 
-assert convertedUsersDF.select(col("converted")).first()[0] == True, "converted column not correct"
+assert converted_users_df.select(col("converted")).first()[0] == True, "converted column not correct"
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### 2-A: Join emails with user IDs
-# MAGIC - Perform an outer join on **`convertedUsersDF`** and **`usersDF`** with the **`email`** field
+# MAGIC - Perform an outer join on **`converted_users_df`** and **`users_df`** with the **`email`** field
 # MAGIC - Filter for users where **`email`** is not null
 # MAGIC - Fill null values in **`converted`** as **`False`**
 # MAGIC 
-# MAGIC Save the result as **`conversionsDF`**.
+# MAGIC Save the result as **`conversions_df`**.
 
 # COMMAND ----------
 
 # TODO
-conversionsDF = (usersDF.FILL_IN
+conversions_df = (users_df.FILL_IN
 )
-display(conversionsDF)
+display(conversions_df)
 
 # COMMAND ----------
 
@@ -108,36 +108,36 @@ display(conversionsDF)
 
 # COMMAND ----------
 
-expectedColumns = ["email", "user_id", "user_first_touch_timestamp", "converted"]
+expected_columns = ["email", "user_id", "user_first_touch_timestamp", "converted"]
 
-expectedCount = 782749
+expected_count = 782749
 
-expectedFalseCount = 572379
+expected_false_count = 572379
 
-assert conversionsDF.columns == expectedColumns, "Columns are not correct"
+assert conversions_df.columns == expected_columns, "Columns are not correct"
 
-assert conversionsDF.filter(col("email").isNull()).count() == 0, "Email column contains null"
+assert conversions_df.filter(col("email").isNull()).count() == 0, "Email column contains null"
 
-assert conversionsDF.count() == expectedCount, "There is an incorrect number of rows"
+assert conversions_df.count() == expected_count, "There is an incorrect number of rows"
 
-assert conversionsDF.filter(col("converted") == False).count() == expectedFalseCount, "There is an incorrect number of false entries in converted column"
+assert conversions_df.filter(col("converted") == False).count() == expected_false_count, "There is an incorrect number of false entries in converted column"
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### 3-A: Get cart item history for each user
-# MAGIC - Explode the **`items`** field in **`eventsDF`** with the results replacing the existing **`items`** field
+# MAGIC - Explode the **`items`** field in **`events_df`** with the results replacing the existing **`items`** field
 # MAGIC - Group by **`user_id`**
 # MAGIC   - Collect a set of all **`items.item_id`** objects for each user and alias the column to "cart"
 # MAGIC 
-# MAGIC Save the result as **`cartsDF`**.
+# MAGIC Save the result as **`carts_df`**.
 
 # COMMAND ----------
 
 # TODO
-cartsDF = (eventsDF.FILL_IN
+carts_df = (events_df.FILL_IN
 )
-display(cartsDF)
+display(carts_df)
 
 # COMMAND ----------
 
@@ -147,29 +147,29 @@ display(cartsDF)
 
 # COMMAND ----------
 
-expectedColumns = ["user_id", "cart"]
+expected_columns = ["user_id", "cart"]
 
-expectedCount = 488403
+expected_count = 488403
 
-assert cartsDF.columns == expectedColumns, "Incorrect columns"
+assert carts_df.columns == expected_columns, "Incorrect columns"
 
-assert cartsDF.count() == expectedCount, "Incorrect number of rows"
+assert carts_df.count() == expected_count, "Incorrect number of rows"
 
-assert cartsDF.select(col("user_id")).drop_duplicates().count() == expectedCount, "Duplicate user_ids present"
+assert carts_df.select(col("user_id")).drop_duplicates().count() == expected_count, "Duplicate user_ids present"
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### 4-A: Join cart item history with emails
-# MAGIC - Perform a left join on **`conversionsDF`** and **`cartsDF`** on the **`user_id`** field
+# MAGIC - Perform a left join on **`conversions_df`** and **`carts_df`** on the **`user_id`** field
 # MAGIC 
-# MAGIC Save result as **`emailCartsDF`**.
+# MAGIC Save result as **`email_carts_df`**.
 
 # COMMAND ----------
 
 # TODO
-emailCartsDF = conversionsDF.FILL_IN
-display(emailCartsDF)
+email_carts_df = conversions_df.FILL_IN
+display(email_carts_df)
 
 # COMMAND ----------
 
@@ -179,33 +179,33 @@ display(emailCartsDF)
 
 # COMMAND ----------
 
-expectedColumns = ["user_id", "email", "user_first_touch_timestamp", "converted", "cart"]
+expected_columns = ["user_id", "email", "user_first_touch_timestamp", "converted", "cart"]
 
-expectedCount = 782749
+expected_count = 782749
 
-expectedCartNullCount = 397799
+expected_cart_null_count = 397799
 
-assert emailCartsDF.columns == expectedColumns, "Columns do not match"
+assert email_carts_df.columns == expected_columns, "Columns do not match"
 
-assert emailCartsDF.count() == expectedCount, "Counts do not match"
+assert email_carts_df.count() == expected_count, "Counts do not match"
 
-assert emailCartsDF.filter(col("cart").isNull()).count() == expectedCartNullCount, "Cart null counts incorrect from join"
+assert email_carts_df.filter(col("cart").isNull()).count() == expected_cart_null_count, "Cart null counts incorrect from join"
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### 5-A: Filter for emails with abandoned cart items
-# MAGIC - Filter **`emailCartsDF`** for users where **`converted`** is False
+# MAGIC - Filter **`email_carts_df`** for users where **`converted`** is False
 # MAGIC - Filter for users with non-null carts
 # MAGIC 
-# MAGIC Save result as **`abandonedItemsDF`**.
+# MAGIC Save result as **`abandoned_carts_df`**.
 
 # COMMAND ----------
 
 # TODO
-abandonedCartsDF = (emailCartsDF.FILL_IN
+abandoned_carts_df = (email_carts_df.FILL_IN
 )
-display(abandonedCartsDF)
+display(abandoned_carts_df)
 
 # COMMAND ----------
 
@@ -215,13 +215,13 @@ display(abandonedCartsDF)
 
 # COMMAND ----------
 
-expectedColumns = ["user_id", "email", "user_first_touch_timestamp", "converted", "cart"]
+expected_columns = ["user_id", "email", "user_first_touch_timestamp", "converted", "cart"]
 
-expectedCount = 204272
+expected_count = 204272
 
-assert abandonedCartsDF.columns == expectedColumns, "Columns do not match"
+assert abandoned_carts_df.columns == expected_columns, "Columns do not match"
 
-assert abandonedCartsDF.count() == expectedCount, "Counts do not match"
+assert abandoned_carts_df.count() == expected_count, "Counts do not match"
 
 # COMMAND ----------
 
@@ -232,9 +232,9 @@ assert abandonedCartsDF.count() == expectedCount, "Counts do not match"
 # COMMAND ----------
 
 # TODO
-abandonedItemsDF = (abandonedCartsDF.FILL_IN
+abandoned_items_df = (abandoned_carts_df.FILL_IN
 )
-display(abandonedItemsDF)
+display(abandoned_items_df)
 
 # COMMAND ----------
 
@@ -244,17 +244,17 @@ display(abandonedItemsDF)
 
 # COMMAND ----------
 
-abandonedItemsDF.count()
+abandoned_items_df.count()
 
 # COMMAND ----------
 
-expectedColumns = ["items", "count"]
+expected_columns = ["items", "count"]
 
-expectedCount = 12
+expected_count = 12
 
-assert abandonedItemsDF.count() == expectedCount, "Counts do not match"
+assert abandoned_items_df.count() == expected_count, "Counts do not match"
 
-assert abandonedItemsDF.columns == expectedColumns, "Columns do not match"
+assert abandoned_items_df.columns == expected_columns, "Columns do not match"
 
 # COMMAND ----------
 

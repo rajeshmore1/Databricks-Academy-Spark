@@ -18,8 +18,8 @@
 # MAGIC 5. Manipulate datetimes
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.Column.html#pyspark.sql.Column" target="_blank">Column</a>: `cast`
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-In Functions</a>: `date_format`, `to_date`, `date_add`, `year`, `month`, `dayofweek`, `minute`, `second`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.Column.html#pyspark.sql.Column" target="_blank">Column</a>: **`cast`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-In Functions</a>: **`date_format`**, **`to_date`**, **`date_add`**, **`year`**, **`month`**, **`dayofweek`**, **`minute`**, **`second`**
 
 # COMMAND ----------
 
@@ -33,7 +33,7 @@
 
 from pyspark.sql.functions import col
 
-df = spark.read.parquet(eventsPath).select("user_id", col("event_timestamp").alias("timestamp"))
+df = spark.read.parquet(events_path).select("user_id", col("event_timestamp").alias("timestamp"))
 display(df)
 
 # COMMAND ----------
@@ -62,15 +62,15 @@ display(df)
 
 # COMMAND ----------
 
-timestampDF = df.withColumn("timestamp", (col("timestamp") / 1e6).cast("timestamp"))
-display(timestampDF)
+timestamp_df = df.withColumn("timestamp", (col("timestamp") / 1e6).cast("timestamp"))
+display(timestamp_df)
 
 # COMMAND ----------
 
 from pyspark.sql.types import TimestampType
 
-timestampDF = df.withColumn("timestamp", (col("timestamp") / 1e6).cast(TimestampType()))
-display(timestampDF)
+timestamp_df = df.withColumn("timestamp", (col("timestamp") / 1e6).cast(TimestampType()))
+display(timestamp_df)
 
 # COMMAND ----------
 
@@ -78,7 +78,7 @@ display(timestampDF)
 # MAGIC There are several common scenarios for datetime usage in Spark:
 # MAGIC 
 # MAGIC - CSV/JSON datasources use the pattern string for parsing and formatting datetime content.
-# MAGIC - Datetime functions related to convert StringType to/from DateType or TimestampType e.g. `unix_timestamp`, `date_format`, `from_unixtime`, `to_date`, `to_timestamp`, etc.
+# MAGIC - Datetime functions related to convert StringType to/from DateType or TimestampType e.g. **`unix_timestamp`**, **`date_format`**, **`from_unixtime`**, **`to_date`**, **`to_timestamp`**, etc.
 # MAGIC 
 # MAGIC Spark uses <a href="https://spark.apache.org/docs/latest/sql-ref-datetime-pattern.html" target="_blank">pattern letters for date and timestamp parsing and formatting</a>. A subset of these patterns are shown below.
 # MAGIC 
@@ -107,11 +107,11 @@ display(timestampDF)
 
 from pyspark.sql.functions import date_format
 
-formattedDF = (timestampDF
+formatted_df = (timestamp_df
                .withColumn("date string", date_format("timestamp", "MMMM dd, yyyy"))
                .withColumn("time string", date_format("timestamp", "HH:mm:ss.SSSSSS"))
               )
-display(formattedDF)
+display(formatted_df)
 
 # COMMAND ----------
 
@@ -128,14 +128,14 @@ display(formattedDF)
 
 from pyspark.sql.functions import year, month, dayofweek, minute, second
 
-datetimeDF = (timestampDF
+datetime_df = (timestamp_df
               .withColumn("year", year(col("timestamp")))
               .withColumn("month", month(col("timestamp")))
               .withColumn("dayofweek", dayofweek(col("timestamp")))
               .withColumn("minute", minute(col("timestamp")))
               .withColumn("second", second(col("timestamp")))
              )
-display(datetimeDF)
+display(datetime_df)
 
 # COMMAND ----------
 
@@ -150,8 +150,8 @@ display(datetimeDF)
 
 from pyspark.sql.functions import to_date
 
-dateDF = timestampDF.withColumn("date", to_date(col("timestamp")))
-display(dateDF)
+date_df = timestamp_df.withColumn("date", to_date(col("timestamp")))
+display(date_df)
 
 # COMMAND ----------
 
@@ -166,8 +166,8 @@ display(dateDF)
 
 from pyspark.sql.functions import date_add
 
-plus2DF = timestampDF.withColumn("plus_two_days", date_add(col("timestamp"), 2))
-display(plus2DF)
+plus_2_df = timestamp_df.withColumn("plus_two_days", date_add(col("timestamp"), 2))
+display(plus_2_df)
 
 # COMMAND ----------
 

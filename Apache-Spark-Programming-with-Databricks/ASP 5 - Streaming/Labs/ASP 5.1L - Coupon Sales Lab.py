@@ -30,7 +30,7 @@
 # MAGIC %md ### 1. Read data stream
 # MAGIC - Use the schema stored in **`schema`**
 # MAGIC - Set to process 1 file per trigger
-# MAGIC - Read from Parquet files in the source directory specified by **`salesPath`**
+# MAGIC - Read from Parquet files in the source directory specified by **`sales_path`**
 # MAGIC 
 # MAGIC Assign the resulting DataFrame to **`df`**.
 
@@ -59,12 +59,12 @@ assert df.columns == ["order_id", "email", "transaction_timestamp", "total_item_
 # MAGIC - Explode the **`items`** field in **`df`** with the results replacing the existing **`items`** field
 # MAGIC - Filter for records where **`items.coupon`** is not null
 # MAGIC 
-# MAGIC Assign the resulting DataFrame to **`couponSalesDF`**.
+# MAGIC Assign the resulting DataFrame to **`coupon_sales_df`**.
 
 # COMMAND ----------
 
 # TODO
-couponSalesDF = (df.FILL_IN
+coupon_sales_df = (df.FILL_IN
 )
 
 # COMMAND ----------
@@ -73,8 +73,8 @@ couponSalesDF = (df.FILL_IN
 
 # COMMAND ----------
 
-schemaStr = str(couponSalesDF.schema)
-assert "StructField(items,StructType(List(StructField(coupon" in schemaStr, "items column was not exploded"
+schema_str = str(coupon_sales_df.schema)
+assert "StructField(items,StructType(List(StructField(coupon" in schema_str, "items column was not exploded"
 
 # COMMAND ----------
 
@@ -82,18 +82,18 @@ assert "StructField(items,StructType(List(StructField(coupon" in schemaStr, "ite
 # MAGIC - Configure the streaming query to write Parquet format files in "append" mode
 # MAGIC - Set the query name to "coupon_sales"
 # MAGIC - Set a trigger interval of 1 second
-# MAGIC - Set the checkpoint location to **`couponsCheckpointPath`**
-# MAGIC - Set the output path to **`couponsOutputPath`**
+# MAGIC - Set the checkpoint location to **`coupons_checkpoint_path`**
+# MAGIC - Set the output path to **`coupons_output_path`**
 # MAGIC 
-# MAGIC Start the streaming query and assign the resulting handle to **`couponSalesQuery`**.
+# MAGIC Start the streaming query and assign the resulting handle to **`coupon_sales_query`**.
 
 # COMMAND ----------
 
 # TODO
-couponsCheckpointPath = workingDir + "/coupon-sales/checkpoint"
-couponsOutputPath = workingDir + "/coupon-sales/output"
+coupons_checkpoint_path = working_dir + "/coupon-sales/checkpoint"
+coupons_output_path = working_dir + "/coupon-sales/output"
 
-couponSalesQuery = (couponSalesDF.FILL_IN
+coupon_sales_query = (coupon_sales_df.FILL_IN
 )
 
 # COMMAND ----------
@@ -102,11 +102,11 @@ couponSalesQuery = (couponSalesDF.FILL_IN
 
 # COMMAND ----------
 
-untilStreamIsReady("coupon_sales")
-assert couponSalesQuery.isActive
-assert len(dbutils.fs.ls(couponsOutputPath)) > 0
-assert len(dbutils.fs.ls(couponsCheckpointPath)) > 0
-assert "coupon_sales" in couponSalesQuery.lastProgress["name"]
+until_stream_is_ready("coupon_sales")
+assert coupon_sales_query.isActive
+assert len(dbutils.fs.ls(coupons_output_path)) > 0
+assert len(dbutils.fs.ls(coupons_checkpoint_path)) > 0
+assert "coupon_sales" in coupon_sales_query.lastProgress["name"]
 
 # COMMAND ----------
 
@@ -117,12 +117,12 @@ assert "coupon_sales" in couponSalesQuery.lastProgress["name"]
 # COMMAND ----------
 
 # TODO
-queryID = couponSalesQuery.FILL_IN
+query_id = coupon_sales_query.FILL_IN
 
 # COMMAND ----------
 
 # TODO
-queryStatus = couponSalesQuery.FILL_IN
+query_status = coupon_sales_query.FILL_IN
 
 # COMMAND ----------
 
@@ -130,8 +130,8 @@ queryStatus = couponSalesQuery.FILL_IN
 
 # COMMAND ----------
 
-assert type(queryID) == str
-assert list(queryStatus.keys()) == ["message", "isDataAvailable", "isTriggerActive"]
+assert type(query_id) == str
+assert list(query_status.keys()) == ["message", "isDataAvailable", "isTriggerActive"]
 
 # COMMAND ----------
 
@@ -141,7 +141,7 @@ assert list(queryStatus.keys()) == ["message", "isDataAvailable", "isTriggerActi
 # COMMAND ----------
 
 # TODO
-couponSalesQuery.FILL_IN
+coupon_sales_query.FILL_IN
 
 # COMMAND ----------
 
@@ -149,7 +149,7 @@ couponSalesQuery.FILL_IN
 
 # COMMAND ----------
 
-assert not couponSalesQuery.isActive
+assert not coupon_sales_query.isActive
 
 # COMMAND ----------
 

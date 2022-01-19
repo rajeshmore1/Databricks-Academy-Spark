@@ -3,8 +3,8 @@
 # Utility method to count & print the number of records in each partition.
 # ****************************************************************************
 
-def printRecordsPerPartition(df):
-  def countInPartition(iterator): yield __builtin__.sum(1 for _ in iterator)
+def print_records_per_partition(df):
+  def count_in_partition(iterator): yield __builtin__.sum(1 for _ in iterator)
   results = (df.rdd                   # Convert to an RDD
     .mapPartitions(countInPartition)  # For each partition, count
     .collect()                        # Return the counts to the driver
@@ -20,7 +20,7 @@ def printRecordsPerPartition(df):
 # Utility to count the number of files in and size of a directory
 # ****************************************************************************
 
-def computeFileStats(path):
+def compute_file_stats(path):
   bytes = 0
   count = 0
 
@@ -40,7 +40,7 @@ def computeFileStats(path):
 # Utility method to cache a table with a specific name
 # ****************************************************************************
 
-def cacheAs(df, name, level = "MEMORY-ONLY"):
+def cache_as(df, name, level = "MEMORY-ONLY"):
   from pyspark.sql.utils import AnalysisException
   if level != "MEMORY-ONLY":
     print("WARNING: The PySpark API currently does not allow specification of the storage level - using MEMORY-ONLY")  
@@ -58,7 +58,7 @@ def cacheAs(df, name, level = "MEMORY-ONLY"):
 # Simplified benchmark of count()
 # ****************************************************************************
 
-def benchmarkCount(func):
+def benchmark_count(func):
   import time
   start = float(time.time() * 1000)                    # Start the clock
   df = func()
@@ -70,7 +70,7 @@ def benchmarkCount(func):
 # Utility methods to terminate streams
 # ****************************************************************************
 
-def getActiveStreams():
+def get_active_streams():
   try:
     return spark.streams.active
   except:
@@ -78,7 +78,7 @@ def getActiveStreams():
     print("Unable to iterate over all active streams - using an empty set instead.")
     return []
 
-def stopStream(s):
+def stop_stream(s):
   try:
     print("Stopping the stream {}.".format(s.name))
     s.stop()
@@ -87,7 +87,7 @@ def stopStream(s):
     # In extream cases, this funtion may throw an ignorable error.
     print("An [ignorable] error has occured while stoping the stream.")
 
-def stopAllStreams():
+def stop_all_streams():
   streams = getActiveStreams()
   while len(streams) > 0:
     stopStream(streams[0])
@@ -97,13 +97,13 @@ def stopAllStreams():
 # Utility method to wait until the stream is read
 # ****************************************************************************
 
-def untilStreamIsReady(name, progressions=3):
+def until_stream_is_ready(name, progressions=3):
   import time
-  queries = list(filter(lambda query: query.name == name or query.name == name + "_p", getActiveStreams()))
+  queries = list(filter(lambda query: query.name == name or query.name == name + "_p", get_active_streams()))
 
   while (len(queries) == 0 or len(queries[0].recentProgress) < progressions):
     time.sleep(5) # Give it a couple of seconds
-    queries = list(filter(lambda query: query.name == name or query.name == name + "_p", getActiveStreams()))
+    queries = list(filter(lambda query: query.name == name or query.name == name + "_p", get_active_streams()))
 
   print("The stream {} is active and ready.".format(name))
 

@@ -14,13 +14,12 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC # Day 1 
 # MAGIC ## Introductions
 # MAGIC * [ASP 1.1 - Databricks Platform]($./ASP 1 - Introductions/ASP 1.1 - Databricks Platform)
 # MAGIC * [ASP 1.1L - Explore Datasets Lab]($./ASP 1 - Introductions/Labs/ASP 1.1L - Explore Datasets Lab)
-
-# COMMAND ----------
-
-# MAGIC %md
+# MAGIC 
+# MAGIC 
 # MAGIC ## Spark Core
 # MAGIC * [ASP 2.1 - Spark SQL]($./ASP 2 - Spark Core/ASP 2.1 - Spark SQL)
 # MAGIC * [ASP 2.2 - Reader & Writer]($./ASP 2 - Spark Core/ASP 2.2 - Reader & Writer)
@@ -32,6 +31,7 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC # Day 2
 # MAGIC ## Functions
 # MAGIC * [ASP 3.1 - Aggregation]($./ASP 3 - Functions/ASP 3.1 - Aggregation)
 # MAGIC * [ASP 3.1L - Revenue by Traffic Lab]($./ASP 3 - Functions/Labs/ASP 3.1L - Revenue by Traffic Lab)
@@ -47,6 +47,7 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC # Day 3
 # MAGIC ## Performance
 # MAGIC * [ASP 4.1 - Query Optimization]($./ASP 4 - Performance/ASP 4.1 - Query Optimization)
 # MAGIC * [ASP 4.2 - Partitioning]($./ASP 4 - Performance/ASP 4.2 - Partitioning)
@@ -55,15 +56,14 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC # Day 4
 # MAGIC ## Streaming
 # MAGIC * [ASP 5.1 - Streaming Query]($./ASP 5 - Streaming/ASP 5.1 - Streaming Query)
 # MAGIC * [ASP 5.1L - Coupon Sales Lab]($./ASP 5 - Streaming/Labs/ASP 5.1L - Coupon Sales Lab)
 # MAGIC * [ASP 5.2L - Hourly Activity by Traffic Lab]($./ASP 5 - Streaming/Labs/ASP 5.2L - Hourly Activity by Traffic Lab)
 # MAGIC * [ASP 5.3L - Activity by Traffic Lab]($./ASP 5 - Streaming/Labs/ASP 5.3L - Activity by Traffic Lab)
-
-# COMMAND ----------
-
-# MAGIC %md
+# MAGIC 
+# MAGIC 
 # MAGIC ## Delta Lake
 # MAGIC * [ASP 6.1 - Delta Lake]($./ASP 6 - Delta Lake/ASP 6.1 - Delta Lake)
 # MAGIC * [ASP 6.1L - Delta Lake Lab]($./ASP 6 - Delta Lake/Labs/ASP 6.1L - Delta Lake Lab)

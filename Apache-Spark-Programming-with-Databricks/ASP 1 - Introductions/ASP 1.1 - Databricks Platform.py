@@ -23,16 +23,16 @@
 # MAGIC 
 # MAGIC 
 # MAGIC ##### Databricks Notebook Utilities
-# MAGIC - <a href="https://docs.databricks.com/notebooks/notebooks-use.html#language-magic" target="_blank">Magic commands</a>: `%python`, `%scala`, `%sql`, `%r`, `%sh`, `%md`
-# MAGIC - <a href="https://docs.databricks.com/dev-tools/databricks-utils.html" target="_blank">DBUtils</a>: `dbutils.fs` (`%fs`), `dbutils.notebooks` (`%run`), `dbutils.widgets`
-# MAGIC - <a href="https://docs.databricks.com/notebooks/visualizations/index.html" target="_blank">Visualization</a>: `display`, `displayHTML`
+# MAGIC - <a href="https://docs.databricks.com/notebooks/notebooks-use.html#language-magic" target="_blank">Magic commands</a>: **`%python`**, **`%scala`**, **`%sql`**, **`%r`**, **`%sh`**, **`%md`**
+# MAGIC - <a href="https://docs.databricks.com/dev-tools/databricks-utils.html" target="_blank">DBUtils</a>: **`dbutils.fs`** **(`%fs`)**, **`dbutils.notebooks`** **(`%run`)**, **`dbutils.widgets`**
+# MAGIC - <a href="https://docs.databricks.com/notebooks/visualizations/index.html" target="_blank">Visualization</a>: **`display`**, **`displayHTML`**
 
 # COMMAND ----------
 
 # MAGIC %md ### Setup
 # MAGIC Run classroom setup to mount Databricks training datasets and create your own database for BedBricks.
 # MAGIC 
-# MAGIC Use the `%run` magic command to run another notebook within a notebook
+# MAGIC Use the **`%run`** magic command to run another notebook within a notebook
 
 # COMMAND ----------
 
@@ -49,7 +49,7 @@ print("Run default language")
 
 # COMMAND ----------
 
-# MAGIC %md Run language specified by language magic commands: `%python`, `%scala`, `%sql`, `%r`
+# MAGIC %md Run language specified by language magic commands: **`%python`**, **`%scala`**, **`%sql`**, **`%r`**
 
 # COMMAND ----------
 
@@ -73,7 +73,7 @@ print("Run default language")
 
 # COMMAND ----------
 
-# MAGIC %md Run shell commands on the driver using the magic command: `%sh`
+# MAGIC %md Run shell commands on the driver using the magic command: **`%sh`**
 
 # COMMAND ----------
 
@@ -81,7 +81,7 @@ print("Run default language")
 
 # COMMAND ----------
 
-# MAGIC %md Render HTML using the function: `displayHTML` (available in Python, Scala, and R)
+# MAGIC %md Render HTML using the function: **`displayHTML`** (available in Python, Scala, and R)
 
 # COMMAND ----------
 
@@ -92,9 +92,9 @@ displayHTML(html)
 
 # MAGIC %md
 # MAGIC ## Create documentation cells
-# MAGIC Render cell as <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank">Markdown</a> using the magic command: `%md`  
+# MAGIC Render cell as <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank">Markdown</a> using the magic command: **`%md`**  
 # MAGIC 
-# MAGIC Below are some examples of how you can use Markdown to format documentation. Click this cell and press `Enter` to view the underlying Markdown syntax.
+# MAGIC Below are some examples of how you can use Markdown to format documentation. Click this cell and press **`Enter`** to view the underlying Markdown syntax.
 # MAGIC 
 # MAGIC 
 # MAGIC # Heading 1
@@ -141,7 +141,7 @@ displayHTML(html)
 # MAGIC %md ## Access DBFS (Databricks File System)
 # MAGIC The <a href="https://docs.databricks.com/data/databricks-file-system.html" target="_blank">Databricks File System</a> (DBFS) is a virtual file system that allows you to treat cloud object storage as though it were local files and directories on the cluster.
 # MAGIC 
-# MAGIC Run file system commands on DBFS using the magic command: `%fs`
+# MAGIC Run file system commands on DBFS using the magic command: **`%fs`**
 
 # COMMAND ----------
 
@@ -161,7 +161,7 @@ displayHTML(html)
 
 # COMMAND ----------
 
-# MAGIC %md `%fs` is shorthand for the <a href="https://docs.databricks.com/dev-tools/databricks-utils.html" target="_blank">DBUtils</a> module: `dbutils.fs`
+# MAGIC %md `%fs` is shorthand for the <a href="https://docs.databricks.com/dev-tools/databricks-utils.html" target="_blank">DBUtils</a> module: **`dbutils.fs`**
 
 # COMMAND ----------
 
@@ -195,7 +195,7 @@ display(files)
 
 # COMMAND ----------
 
-files = dbutils.fs.ls(eventsPath)
+files = dbutils.fs.ls(events_path)
 display(files)
 
 # COMMAND ----------
@@ -209,12 +209,12 @@ display(files)
 
 # COMMAND ----------
 
-spark.sql(f"SET c.events_path = {eventsPath}")
+spark.sql(f"SET c.events_path = {events_path}")
 
 # COMMAND ----------
 
 # MAGIC %md ## Create table
-# MAGIC Run <a href="https://docs.databricks.com/spark/latest/spark-sql/language-manual/index.html#sql-reference" target="_blank">Databricks SQL Commands</a> to create a table named `events` using BedBricks event files on DBFS.
+# MAGIC Run <a href="https://docs.databricks.com/spark/latest/spark-sql/language-manual/index.html#sql-reference" target="_blank">Databricks SQL Commands</a> to create a table named **`events`** using BedBricks event files on DBFS.
 
 # COMMAND ----------
 
@@ -227,7 +227,7 @@ spark.sql(f"SET c.events_path = {eventsPath}")
 
 # COMMAND ----------
 
-print(databaseName)
+print(database_name)
 
 # COMMAND ----------
 
@@ -236,7 +236,7 @@ print(databaseName)
 # COMMAND ----------
 
 # MAGIC %md ## Query table and plot results
-# MAGIC Use SQL to query the `events` table
+# MAGIC Use SQL to query the **`events`** table
 
 # COMMAND ----------
 
@@ -268,7 +268,7 @@ print(databaseName)
 
 # COMMAND ----------
 
-# MAGIC %md Access the current value of the widget using the function `getArgument`
+# MAGIC %md Access the current value of the widget using the function **`getArgument`**
 
 # COMMAND ----------
 
@@ -288,7 +288,7 @@ print(databaseName)
 
 # COMMAND ----------
 
-# MAGIC %md To create widgets in Python, Scala, and R, use the DBUtils module: `dbutils.widgets`
+# MAGIC %md To create widgets in Python, Scala, and R, use the DBUtils module: **`dbutils.widgets`**
 
 # COMMAND ----------
 
@@ -297,7 +297,7 @@ dbutils.widgets.multiselect("colors", "orange", ["red", "orange", "black", "blue
 
 # COMMAND ----------
 
-# MAGIC %md Access the current value of the widget using the `dbutils.widgets` function `get`
+# MAGIC %md Access the current value of the widget using the **`dbutils.widgets`** function **`get`**
 
 # COMMAND ----------
 

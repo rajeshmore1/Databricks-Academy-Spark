@@ -20,11 +20,11 @@
 # MAGIC 1. Convert between DataFrames and SQL
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#spark-session-apis" target="_blank">SparkSession</a>: `sql`, `table`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#spark-session-apis" target="_blank">SparkSession</a>: **`sql`**, **`table`**
 # MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>:
-# MAGIC   - Transformations:  `select`, `where`, `orderBy`
-# MAGIC   - Actions: `show`, `count`, `take`
-# MAGIC   - Other methods: `printSchema`, `schema`, `createOrReplaceTempView`
+# MAGIC   - Transformations:  **`select`**, **`where`**, **`orderBy`**
+# MAGIC   - Actions: **`show`**, **`count`**, **`take`**
+# MAGIC   - Other methods: **`printSchema`**, **`schema`**, **`createOrReplaceTempView`**
 
 # COMMAND ----------
 
@@ -92,16 +92,16 @@ display(spark.table("products")
 # MAGIC Scala docs tend to be more comprehensive, and Python docs tend to have more code examples.
 # MAGIC 
 # MAGIC #### Navigating Docs for the Spark SQL Module
-# MAGIC Find the Spark SQL module by navigating to `org.apache.spark.sql` in the Scala API or `pyspark.sql` in the Python API.  
-# MAGIC The first class we'll explore in this module is the `SparkSession` class. You can find this by entering "SparkSession" in the search bar.
+# MAGIC Find the Spark SQL module by navigating to **`org.apache.spark.sql`** in the Scala API or **`pyspark.sql`** in the Python API.  
+# MAGIC The first class we'll explore in this module is the **`SparkSession`** class. You can find this by entering "SparkSession" in the search bar.
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ## SparkSession
-# MAGIC The `SparkSession` class is the single entry point to all functionality in Spark using the DataFrame API. 
+# MAGIC The **`SparkSession`** class is the single entry point to all functionality in Spark using the DataFrame API. 
 # MAGIC 
-# MAGIC In Databricks notebooks, the SparkSession is created for you, stored in a variable called `spark`.
+# MAGIC In Databricks notebooks, the SparkSession is created for you, stored in a variable called **`spark`**.
 
 # COMMAND ----------
 
@@ -109,11 +109,11 @@ spark
 
 # COMMAND ----------
 
-# MAGIC %md The example from the beginning of this lesson used the SparkSession method `table` to create a DataFrame from the `products` table. Let's save this in the variable `productsDF`.
+# MAGIC %md The example from the beginning of this lesson used the SparkSession method **`table`** to create a DataFrame from the **`products`** table. Let's save this in the variable **`products_df`**.
 
 # COMMAND ----------
 
-productsDF = spark.table("products")
+products_df = spark.table("products")
 
 # COMMAND ----------
 
@@ -135,62 +135,62 @@ productsDF = spark.table("products")
 
 # COMMAND ----------
 
-resultDF = spark.sql("""
+result_df = spark.sql("""
 SELECT name, price
 FROM products
 WHERE price < 200
 ORDER BY price
 """)
 
-display(resultDF)
+display(result_df)
 
 # COMMAND ----------
 
 # MAGIC %md ## DataFrames
-# MAGIC Recall that expressing our query using methods in the DataFrame API returns results in a DataFrame. Let's store this in the variable `budgetDF`.
+# MAGIC Recall that expressing our query using methods in the DataFrame API returns results in a DataFrame. Let's store this in the variable **`budget_df`**.
 # MAGIC 
 # MAGIC A **DataFrame** is a distributed collection of data grouped into named columns.
 
 # COMMAND ----------
 
-budgetDF = (spark.table("products")
+budget_df = (spark.table("products")
   .select("name", "price")
   .where("price < 200")
   .orderBy("price"))
 
 # COMMAND ----------
 
-# MAGIC %md We can use `display()` to output the results of a dataframe.
+# MAGIC %md We can use **`display()`** to output the results of a dataframe.
 
 # COMMAND ----------
 
-display(budgetDF)
+display(budget_df)
 
 # COMMAND ----------
 
 # MAGIC %md The **schema** defines the column names and types of a dataframe.
 # MAGIC 
-# MAGIC Access a dataframe's schema using the `schema` attribute.
+# MAGIC Access a dataframe's schema using the **`schema`** attribute.
 
 # COMMAND ----------
 
-budgetDF.schema
+budget_df.schema
 
 # COMMAND ----------
 
-# MAGIC %md View a nicer output for this schema using the `printSchema()` method.
+# MAGIC %md View a nicer output for this schema using the **`printSchema()`** method.
 
 # COMMAND ----------
 
-budgetDF.printSchema()
+budget_df.printSchema()
 
 # COMMAND ----------
 
 # MAGIC %md ## Transformations
-# MAGIC When we created `budgetDF`, we used a series of DataFrame transformation methods e.g. `select`, `where`, `orderBy`. 
+# MAGIC When we created **`budget_df`**, we used a series of DataFrame transformation methods e.g. **`select`**, **`where`**, **`orderBy`**. 
 # MAGIC 
 # MAGIC ```
-# MAGIC productsDF
+# MAGIC products_df
 # MAGIC   .select("name", "price")
 # MAGIC   .where("price < 200")
 # MAGIC   .orderBy("price")
@@ -202,7 +202,7 @@ budgetDF.printSchema()
 
 # COMMAND ----------
 
-(productsDF
+(products_df
   .select("name", "price")
   .where("price < 200")
   .orderBy("price"))
@@ -213,11 +213,11 @@ budgetDF.printSchema()
 # MAGIC Conversely, DataFrame actions are methods that **trigger computation**.  
 # MAGIC Actions are needed to trigger the execution of any DataFrame transformations. 
 # MAGIC 
-# MAGIC The `show` action causes the following cell to execute transformations.
+# MAGIC The **`show`** action causes the following cell to execute transformations.
 
 # COMMAND ----------
 
-(productsDF
+(products_df
   .select("name", "price")
   .where("price < 200")
   .orderBy("price")
@@ -239,19 +239,21 @@ budgetDF.printSchema()
 
 # COMMAND ----------
 
-# MAGIC %md `count` returns the number of records in a DataFrame.
+# MAGIC %md 
+# MAGIC **`count`** returns the number of records in a DataFrame.
 
 # COMMAND ----------
 
-budgetDF.count()
+budget_df.count()
 
 # COMMAND ----------
 
-# MAGIC %md `collect` returns an array of all rows in a DataFrame.
+# MAGIC %md 
+# MAGIC **`collect`** returns an array of all rows in a DataFrame.
 
 # COMMAND ----------
 
-budgetDF.collect() 
+budget_df.collect() 
 
 # COMMAND ----------
 
@@ -260,11 +262,11 @@ budgetDF.collect()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC `createOrReplaceTempView` creates a temporary view based on the DataFrame. The lifetime of the temporary view is tied to the SparkSession that was used to create the DataFrame.
+# MAGIC **`createOrReplaceTempView`** creates a temporary view based on the DataFrame. The lifetime of the temporary view is tied to the SparkSession that was used to create the DataFrame.
 
 # COMMAND ----------
 
-budgetDF.createOrReplaceTempView("budget")
+budget_df.createOrReplaceTempView("budget")
 
 # COMMAND ----------
 

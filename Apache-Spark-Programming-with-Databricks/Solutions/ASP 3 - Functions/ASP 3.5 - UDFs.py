@@ -17,10 +17,10 @@
 # MAGIC 1. Create and apply a Pandas (vectorized) UDF
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.functions.udf.html?#pyspark.sql.functions.udf" target="_blank">UDF Registration (`spark.udf`)</a>: `register`
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-In Functions</a>: `udf`
-# MAGIC - <a href="https://docs.databricks.com/spark/latest/spark-sql/udf-python.html#use-udf-with-dataframes" target="_blank">Python UDF Decorator</a>: `@udf`
-# MAGIC - <a href="https://docs.databricks.com/spark/latest/spark-sql/udf-python-pandas.html#pandas-user-defined-functions" target="_blank">Pandas UDF Decorator</a>: `@pandas_udf`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.functions.udf.html?#pyspark.sql.functions.udf" target="_blank">UDF Registration (**`spark.udf`**)</a>: **`register`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-In Functions</a>: **`udf`**
+# MAGIC - <a href="https://docs.databricks.com/spark/latest/spark-sql/udf-python.html#use-udf-with-dataframes" target="_blank">Python UDF Decorator</a>: **`@udf`**
+# MAGIC - <a href="https://docs.databricks.com/spark/latest/spark-sql/udf-python-pandas.html#pandas-user-defined-functions" target="_blank">Pandas UDF Decorator</a>: **`@pandas_udf`**
 
 # COMMAND ----------
 
@@ -42,21 +42,21 @@
 
 # COMMAND ----------
 
-salesDF = spark.read.parquet(salesPath)
-display(salesDF)
+sales_df = spark.read.parquet(sales_path)
+display(sales_df)
 
 # COMMAND ----------
 
 # MAGIC %md ### Define a function
 # MAGIC 
-# MAGIC Define a function (on the driver) to get the first letter of a string from the `email` field.
+# MAGIC Define a function (on the driver) to get the first letter of a string from the **`email`** field.
 
 # COMMAND ----------
 
-def firstLetterFunction(email):
+def first_letter_function(email):
     return email[0]
 
-firstLetterFunction("annagray@kaufman.com")
+first_letter_function("annagray@kaufman.com")
 
 # COMMAND ----------
 
@@ -65,55 +65,55 @@ firstLetterFunction("annagray@kaufman.com")
 
 # COMMAND ----------
 
-firstLetterUDF = udf(firstLetterFunction)
+first_letter_udf = udf(first_letter_function)
 
 # COMMAND ----------
 
-# MAGIC %md Apply the UDF on the `email` column.
+# MAGIC %md Apply the UDF on the **`email`** column.
 
 # COMMAND ----------
 
 from pyspark.sql.functions import col
 
-display(salesDF.select(firstLetterUDF(col("email"))))
+display(sales_df.select(first_letter_udf(col("email"))))
 
 # COMMAND ----------
 
 # MAGIC %md ### Register UDF to use in SQL
-# MAGIC Register the UDF using `spark.udf.register` to also make it available for use in the SQL namespace.
+# MAGIC Register the UDF using **`spark.udf.register`** to also make it available for use in the SQL namespace.
 
 # COMMAND ----------
 
-salesDF.createOrReplaceTempView("sales")
+sales_df.createOrReplaceTempView("sales")
 
-firstLetterUDF = spark.udf.register("sql_udf", firstLetterFunction)
+first_letter_udf = spark.udf.register("sql_udf", first_letter_function)
 
 # COMMAND ----------
 
 # You can still apply the UDF from Python
-display(salesDF.select(firstLetterUDF(col("email"))))
+display(sales_df.select(first_letter_udf(col("email"))))
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC -- You can now also apply the UDF from SQL
-# MAGIC SELECT sql_udf(email) AS firstLetter FROM sales
+# MAGIC SELECT sql_udf(email) AS first_letter FROM sales
 
 # COMMAND ----------
 
 # MAGIC %md ### Use Decorator Syntax (Python Only)
 # MAGIC 
-# MAGIC Alternatively, you can define and register a UDF using <a href="https://realpython.com/primer-on-python-decorators/" target="_blank">Python decorator syntax</a>. The `@udf` decorator parameter is the Column datatype the function returns.
+# MAGIC Alternatively, you can define and register a UDF using <a href="https://realpython.com/primer-on-python-decorators/" target="_blank">Python decorator syntax</a>. The **`@udf`** decorator parameter is the Column datatype the function returns.
 # MAGIC 
-# MAGIC You will no longer be able to call the local Python function (i.e., `firstLetterUDF("annagray@kaufman.com")` will not work).
+# MAGIC You will no longer be able to call the local Python function (i.e., **`first_letter_udf("annagray@kaufman.com")`** will not work).
 # MAGIC 
-# MAGIC <img src="https://files.training.databricks.com/images/icon_note_32.png" alt="Note"> This example also uses <a href="https://docs.python.org/3/library/typing.html" target="_blank">Python type hints</a>, which were introduced in Python 3.5. Type hints are not required for this example, but instead serve as "documentation" to help developers use the function correctly. They are used in this example to emphasize that the UDF processes one record at a time, taking a single `str` argument and returning a `str` value.
+# MAGIC <img src="https://files.training.databricks.com/images/icon_note_32.png" alt="Note"> This example also uses <a href="https://docs.python.org/3/library/typing.html" target="_blank">Python type hints</a>, which were introduced in Python 3.5. Type hints are not required for this example, but instead serve as "documentation" to help developers use the function correctly. They are used in this example to emphasize that the UDF processes one record at a time, taking a single **`str`** argument and returning a **`str`** value.
 
 # COMMAND ----------
 
 # Our input/output is a string
 @udf("string")
-def firstLetterUDF(email: str) -> str:
+def first_letter_udf(email: str) -> str:
     return email[0]
 
 # COMMAND ----------
@@ -124,8 +124,8 @@ def firstLetterUDF(email: str) -> str:
 
 from pyspark.sql.functions import col
 
-salesDF = spark.read.parquet(f"{datasetsDir}/sales/sales.parquet")
-display(salesDF.select(firstLetterUDF(col("email"))))
+sales_df = spark.read.parquet(f"{datasets_dir}/sales/sales.parquet")
+display(sales_df.select(first_letter_udf(col("email"))))
 
 # COMMAND ----------
 
@@ -151,17 +151,17 @@ from pyspark.sql.functions import pandas_udf
 
 # We have a string input/output
 @pandas_udf("string")
-def vectorizedUDF(email: pd.Series) -> pd.Series:
+def vectorized_udf(email: pd.Series) -> pd.Series:
     return email.str[0]
 
 # Alternatively
-# def vectorizedUDF(email: pd.Series) -> pd.Series:
+# def vectorized_udf(email: pd.Series) -> pd.Series:
 #     return email.str[0]
-# vectorizedUDF = pandas_udf(vectorizedUDF, "string")
+# vectorized_udf = pandas_udf(vectorized_udf, "string")
 
 # COMMAND ----------
 
-display(salesDF.select(vectorizedUDF(col("email"))))
+display(sales_df.select(vectorized_udf(col("email"))))
 
 # COMMAND ----------
 
@@ -169,7 +169,7 @@ display(salesDF.select(vectorizedUDF(col("email"))))
 
 # COMMAND ----------
 
-spark.udf.register("sql_vectorized_udf", vectorizedUDF)
+spark.udf.register("sql_vectorized_udf", vectorized_udf)
 
 # COMMAND ----------
 
@@ -191,7 +191,7 @@ spark.udf.register("sql_vectorized_udf", vectorizedUDF)
 
 # MAGIC %md Start with a DataFrame of the average number of active users by day of week.
 # MAGIC 
-# MAGIC This was the resulting `df` in a previous lab.
+# MAGIC This was the resulting **`df`** in a previous lab.
 
 # COMMAND ----------
 
@@ -199,7 +199,7 @@ from pyspark.sql.functions import approx_count_distinct, avg, col, date_format, 
 
 df = (spark
       .read
-      .parquet(eventsPath)
+      .parquet(events_path)
       .withColumn("ts", (col("event_timestamp") / 1e6).cast("timestamp"))
       .withColumn("date", to_date("ts"))
       .groupBy("date").agg(approx_count_distinct("user_id").alias("active_users"))
@@ -214,11 +214,11 @@ display(df)
 # MAGIC %md
 # MAGIC ### 1. Define UDF to label day of week
 # MAGIC 
-# MAGIC Use the **`labelDayOfWeek`** function provided below to create the UDF **`labelDowUDF`**
+# MAGIC Use the **`label_day_of_week`** function provided below to create the UDF **`label_dow_UDF`**
 
 # COMMAND ----------
 
-def labelDayOfWeek(day: str) -> str:
+def label_day_of_week(day: str) -> str:
     dow = {"Mon": "1", "Tue": "2", "Wed": "3", "Thu": "4",
            "Fri": "5", "Sat": "6", "Sun": "7"}
     return dow.get(day) + "-" + day
@@ -226,7 +226,7 @@ def labelDayOfWeek(day: str) -> str:
 # COMMAND ----------
 
 # ANSWER
-labelDowUDF = spark.udf.register("labelDow", labelDayOfWeek)
+label_dow_udf = spark.udf.register("label_dow", label_day_of_week)
 
 # COMMAND ----------
 
@@ -238,11 +238,11 @@ labelDowUDF = spark.udf.register("labelDow", labelDayOfWeek)
 # COMMAND ----------
 
 # ANSWER
-finalDF = (df
-           .withColumn("day", labelDowUDF(col("day")))
+final_df = (df
+           .withColumn("day", label_dow_udf(col("day")))
            .sort("day")
           )
-display(finalDF)
+display(final_df)
 
 # COMMAND ----------
 

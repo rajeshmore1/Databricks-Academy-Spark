@@ -31,7 +31,7 @@ from pyspark.sql.functions import col
 
 df = (spark
       .read
-      .parquet(eventsPath)
+      .parquet(events_path)
       .select("user_id", col("event_timestamp").alias("ts"))
      )
 
@@ -48,11 +48,11 @@ display(df)
 # ANSWER
 from pyspark.sql.functions import to_date
 
-datetimeDF = (df
+datetime_df = (df
               .withColumn("ts", (col("ts") / 1e6).cast("timestamp"))
               .withColumn("date", to_date("ts"))
              )
-display(datetimeDF)
+display(datetime_df)
 
 # COMMAND ----------
 
@@ -66,7 +66,7 @@ expected1a = StructType([StructField("user_id", StringType(), True),
                          StructField("ts", TimestampType(), True),
                          StructField("date", DateType(), True)])
 
-result1a = datetimeDF.schema
+result1a = datetime_df.schema
 
 assert expected1a == result1a, "datetimeDF does not have the expected schema"
 
@@ -75,7 +75,7 @@ assert expected1a == result1a, "datetimeDF does not have the expected schema"
 import datetime
 
 expected1b = datetime.date(2020, 6, 19)
-result1b = datetimeDF.sort("date").first().date
+result1b = datetime_df.sort("date").first().date
 
 assert expected1b == result1b, "datetimeDF does not have the expected date values"
 
@@ -94,12 +94,12 @@ assert expected1b == result1b, "datetimeDF does not have the expected date value
 # ANSWER
 from pyspark.sql.functions import approx_count_distinct
 
-activeUsersDF = (datetimeDF
+active_users_df = (datetime_df
                  .groupBy("date")
                  .agg(approx_count_distinct("user_id").alias("active_users"))
                  .sort("date")
                 )
-display(activeUsersDF)
+display(active_users_df)
 
 # COMMAND ----------
 
@@ -112,7 +112,7 @@ from pyspark.sql.types import LongType
 expected2a = StructType([StructField("date", DateType(), True),
                          StructField("active_users", LongType(), False)])
 
-result2a = activeUsersDF.schema
+result2a = active_users_df.schema
 
 assert expected2a == result2a, "activeUsersDF does not have the expected schema"
 
@@ -120,7 +120,7 @@ assert expected2a == result2a, "activeUsersDF does not have the expected schema"
 
 expected2b = [(datetime.date(2020, 6, 19), 251573), (datetime.date(2020, 6, 20), 357215), (datetime.date(2020, 6, 21), 305055), (datetime.date(2020, 6, 22), 239094), (datetime.date(2020, 6, 23), 243117)]
 
-result2b = [(row.date, row.active_users) for row in activeUsersDF.take(5)]
+result2b = [(row.date, row.active_users) for row in active_users_df.take(5)]
 
 assert expected2b == result2b, "activeUsersDF does not have the expected values"
 
@@ -137,12 +137,12 @@ assert expected2b == result2b, "activeUsersDF does not have the expected values"
 # ANSWER
 from pyspark.sql.functions import date_format, avg
 
-activeDowDF = (activeUsersDF
+active_dow_df = (active_users_df
                .withColumn("day", date_format(col("date"), "E"))
                .groupBy("day")
                .agg(avg(col("active_users")).alias("avg_users"))
               )
-display(activeDowDF)
+display(active_dow_df)
 
 # COMMAND ----------
 
@@ -155,7 +155,7 @@ from pyspark.sql.types import DoubleType
 expected3a = StructType([StructField("day", StringType(), True),
                          StructField("avg_users", DoubleType(), True)])
 
-result3a = activeDowDF.schema
+result3a = active_dow_df.schema
 
 assert expected3a == result3a, "activeDowDF does not have the expected schema"
 
@@ -163,7 +163,7 @@ assert expected3a == result3a, "activeDowDF does not have the expected schema"
 
 expected3b = [("Fri", 247180.66666666666), ("Mon", 238195.5), ("Sat", 278482.0), ("Sun", 282905.5), ("Thu", 264620.0), ("Tue", 260942.5), ("Wed", 227214.0)]
 
-result3b = [(row.day, row.avg_users) for row in activeDowDF.sort("day").collect()]
+result3b = [(row.day, row.avg_users) for row in active_dow_df.sort("day").collect()]
 
 assert expected3b == result3b, "activeDowDF does not have the expected values"
 

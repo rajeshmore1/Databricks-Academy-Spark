@@ -21,8 +21,8 @@
 
 # COMMAND ----------
 
-salesDF = spark.read.parquet(salesPath)
-deltaSalesPath = workingDir + "/delta-sales"
+sales_df = spark.read.parquet(sales_path)
+delta_sales_path = working_dir + "/delta-sales"
 
 # COMMAND ----------
 
@@ -32,7 +32,7 @@ deltaSalesPath = workingDir + "/delta-sales"
 # COMMAND ----------
 
 # ANSWER
-salesDF.write.format("delta").mode("overwrite").save(deltaSalesPath)
+sales_df.write.format("delta").mode("overwrite").save(delta_sales_path)
 
 # COMMAND ----------
 
@@ -40,7 +40,7 @@ salesDF.write.format("delta").mode("overwrite").save(deltaSalesPath)
 
 # COMMAND ----------
 
-assert len(dbutils.fs.ls(deltaSalesPath)) > 0
+assert len(dbutils.fs.ls(delta_sales_path)) > 0
 
 # COMMAND ----------
 
@@ -53,8 +53,8 @@ assert len(dbutils.fs.ls(deltaSalesPath)) > 0
 # ANSWER
 from pyspark.sql.functions import size, col
 
-updatedSalesDF = salesDF.withColumn("items", size(col("items")))
-display(updatedSalesDF)
+updated_sales_df = sales_df.withColumn("items", size(col("items")))
+display(updated_sales_df)
 
 # COMMAND ----------
 
@@ -64,7 +64,7 @@ display(updatedSalesDF)
 
 from pyspark.sql.types import IntegerType
 
-assert updatedSalesDF.schema[6].dataType == IntegerType()
+assert updated_sales_df.schema[6].dataType == IntegerType()
 
 # COMMAND ----------
 
@@ -76,7 +76,7 @@ assert updatedSalesDF.schema[6].dataType == IntegerType()
 # COMMAND ----------
 
 # ANSWER
-updatedSalesDF.write.format("delta").mode("overwrite").option("overwriteSchema", "true").save(deltaSalesPath)
+updated_sales_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").save(delta_sales_path)
 
 # COMMAND ----------
 
@@ -84,7 +84,7 @@ updatedSalesDF.write.format("delta").mode("overwrite").option("overwriteSchema",
 
 # COMMAND ----------
 
-assert spark.read.format("delta").load(deltaSalesPath).schema[6].dataType == IntegerType()
+assert spark.read.format("delta").load(delta_sales_path).schema[6].dataType == IntegerType()
 
 # COMMAND ----------
 
@@ -98,7 +98,7 @@ assert spark.read.format("delta").load(deltaSalesPath).schema[6].dataType == Int
 
 # ANSWER
 spark.sql("DROP TABLE IF EXISTS sales_delta")
-spark.sql("CREATE TABLE sales_delta USING DELTA LOCATION '{}'".format(deltaSalesPath))
+spark.sql("CREATE TABLE sales_delta USING DELTA LOCATION '{}'".format(delta_sales_path))
 
 # COMMAND ----------
 
@@ -111,9 +111,9 @@ display(spark.sql("DESCRIBE HISTORY sales_delta"))
 
 # COMMAND ----------
 
-salesDeltaDF = spark.sql("SELECT * FROM sales_delta")
-assert salesDeltaDF.count() == 210370
-assert salesDeltaDF.schema[6].dataType == IntegerType()
+sales_delta_df = spark.sql("SELECT * FROM sales_delta")
+assert sales_delta_df.count() == 210370
+assert sales_delta_df.schema[6].dataType == IntegerType()
 
 # COMMAND ----------
 
@@ -124,8 +124,8 @@ assert salesDeltaDF.schema[6].dataType == IntegerType()
 # COMMAND ----------
 
 # ANSWER
-oldSalesDF = spark.read.format("delta").option("versionAsOf", 0).load(deltaSalesPath)
-display(oldSalesDF)
+old_sales_df = spark.read.format("delta").option("versionAsOf", 0).load(delta_sales_path)
+display(old_sales_df)
 
 # COMMAND ----------
 
@@ -133,7 +133,7 @@ display(oldSalesDF)
 
 # COMMAND ----------
 
-assert oldSalesDF.select(size(col("items"))).first()[0] == 1
+assert old_sales_df.select(size(col("items"))).first()[0] == 1
 
 # COMMAND ----------
 

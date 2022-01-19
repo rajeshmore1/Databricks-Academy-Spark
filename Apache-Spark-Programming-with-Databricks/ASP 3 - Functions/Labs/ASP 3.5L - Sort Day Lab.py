@@ -23,7 +23,7 @@
 
 # MAGIC %md Start with a DataFrame of the average number of active users by day of week.
 # MAGIC 
-# MAGIC This was the resulting `df` in a previous lab.
+# MAGIC This was the resulting **`df`** in a previous lab.
 
 # COMMAND ----------
 
@@ -31,7 +31,7 @@ from pyspark.sql.functions import approx_count_distinct, avg, col, date_format, 
 
 df = (spark
       .read
-      .parquet(eventsPath)
+      .parquet(events_path)
       .withColumn("ts", (col("event_timestamp") / 1e6).cast("timestamp"))
       .withColumn("date", to_date("ts"))
       .groupBy("date").agg(approx_count_distinct("user_id").alias("active_users"))
@@ -46,11 +46,11 @@ display(df)
 # MAGIC %md
 # MAGIC ### 1. Define UDF to label day of week
 # MAGIC 
-# MAGIC Use the **`labelDayOfWeek`** function provided below to create the UDF **`labelDowUDF`**
+# MAGIC Use the **`label_day_of_week`** function provided below to create the UDF **`label_dow_udf`**
 
 # COMMAND ----------
 
-def labelDayOfWeek(day: str) -> str:
+def label_day_of_week(day: str) -> str:
     dow = {"Mon": "1", "Tue": "2", "Wed": "3", "Thu": "4",
            "Fri": "5", "Sat": "6", "Sun": "7"}
     return dow.get(day) + "-" + day
@@ -58,7 +58,7 @@ def labelDayOfWeek(day: str) -> str:
 # COMMAND ----------
 
 # TODO
-labelDowUDF = FILL_IN
+label_dow_udf = FILL_IN
 
 # COMMAND ----------
 
@@ -70,9 +70,9 @@ labelDowUDF = FILL_IN
 # COMMAND ----------
 
 # TODO
-finalDF = FILL_IN
+final_df = FILL_IN
 
-display(finalDF)
+display(final_df)
 
 # COMMAND ----------
 

@@ -54,7 +54,7 @@ df = (spark
       .readStream
       .schema(schema)
       .option("maxFilesPerTrigger", 1)
-      .parquet(eventsPath)
+      .parquet(events_path)
      )
 
 # COMMAND ----------
@@ -81,7 +81,7 @@ from pyspark.sql.functions import col, approx_count_distinct, count
 
 spark.conf.set("spark.sql.shuffle.partitions", spark.sparkContext.defaultParallelism)
 
-trafficDF = (df
+traffic_df = (df
              .groupBy("traffic_source")
              .agg(approx_count_distinct("user_id").alias("active_users"))
              .sort("traffic_source")
@@ -93,24 +93,24 @@ trafficDF = (df
 
 # COMMAND ----------
 
-assert str(trafficDF.schema) == "StructType(List(StructField(traffic_source,StringType,true),StructField(active_users,LongType,false)))"
+assert str(traffic_df.schema) == "StructType(List(StructField(traffic_source,StringType,true),StructField(active_users,LongType,false)))"
 
 # COMMAND ----------
 
 # MAGIC %md ### 3. Execute query with display() and plot results
-# MAGIC - Execute results for **`trafficDF`** using display()
+# MAGIC - Execute results for **`traffic_df`** using display()
 # MAGIC - Plot the streaming query results as a bar graph
 
 # COMMAND ----------
 
 # ANSWER
-display(trafficDF)
+display(traffic_df)
 
 # COMMAND ----------
 
 # MAGIC %md **CHECK YOUR WORK**
-# MAGIC - You bar chart should plot `traffic_source` on the x-axis and `active_users` on the y-axis
-# MAGIC - The top three traffic sources in descending order should be `google`, `facebook`, and `instagram`.
+# MAGIC - You bar chart should plot **`traffic_source`** on the x-axis and **`active_users`** on the y-axis
+# MAGIC - The top three traffic sources in descending order should be **`google`**, **`facebook`**, and **`instagram`**.
 
 # COMMAND ----------
 
@@ -122,7 +122,7 @@ display(trafficDF)
 # COMMAND ----------
 
 # ANSWER
-trafficQuery = (trafficDF
+traffic_query = (traffic_df
                 .writeStream
                 .queryName("active_users_by_traffic_p")
                 .format("memory")
@@ -137,10 +137,10 @@ trafficQuery = (trafficDF
 
 # COMMAND ----------
 
-untilStreamIsReady("active_users_by_traffic")
-assert trafficQuery.isActive
-assert "active_users_by_traffic" in trafficQuery.name
-assert trafficQuery.lastProgress["sink"]["description"] == "MemorySink"
+until_stream_is_ready("active_users_by_traffic")
+assert traffic_query.isActive
+assert "active_users_by_traffic" in traffic_query.name
+assert traffic_query.lastProgress["sink"]["description"] == "MemorySink"
 
 # COMMAND ----------
 
@@ -186,7 +186,7 @@ for s in spark.streams.active:
 
 # COMMAND ----------
 
-assert not trafficQuery.isActive
+assert not traffic_query.isActive
 
 # COMMAND ----------
 

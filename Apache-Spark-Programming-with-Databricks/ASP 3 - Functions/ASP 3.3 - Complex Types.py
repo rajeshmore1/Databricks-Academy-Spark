@@ -17,11 +17,11 @@
 # MAGIC 1. Union DataFrames together
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: `unionByName`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: **`unionByName`**
 # MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-In Functions</a>:
-# MAGIC   - Aggregate: `collect_set`
-# MAGIC   - Collection: `array_contains`, `element_at`, `explode`
-# MAGIC   - String: `split`
+# MAGIC   - Aggregate: **`collect_set`**
+# MAGIC   - Collection: **`array_contains`**, **`element_at`**, **`explode`**
+# MAGIC   - String: **`split`**
 
 # COMMAND ----------
 
@@ -63,7 +63,7 @@
 
 # COMMAND ----------
 
-# MAGIC %run ../../Includes/Classroom-Setup
+# MAGIC %run ../Includes/Classroom-Setup
 
 # COMMAND ----------
 
@@ -73,23 +73,23 @@
 # MAGIC - Select the **`email`** and **`item.item_name`** fields
 # MAGIC - Split the words in **`item_name`** into an array and alias the column to "details"
 # MAGIC 
-# MAGIC Assign the resulting DataFrame to **`detailsDF`**.
+# MAGIC Assign the resulting DataFrame to **`details_df`**.
 
 # COMMAND ----------
 
-df = spark.read.parquet(salesPath)
+df = spark.read.parquet(sales_path)
 display(df)
 
 # COMMAND ----------
 
 from pyspark.sql.functions import *
 
-detailsDF = (df
+details_df = (df
              .withColumn("items", explode("items"))
              .select("email", "items.item_name")
              .withColumn("details", split(col("item_name"), " "))
             )
-display(detailsDF)
+display(details_df)
 
 # COMMAND ----------
 
@@ -103,16 +103,16 @@ display(detailsDF)
 # MAGIC - Add a **`size`** column by extracting the element at position 2
 # MAGIC - Add a **`quality`** column by extracting the element at position 1
 # MAGIC 
-# MAGIC Save the result as **`mattressDF`**.
+# MAGIC Save the result as **`mattress_df`**.
 
 # COMMAND ----------
 
-mattressDF = (detailsDF
+mattress_df = (details_df
               .filter(array_contains(col("details"), "Mattress"))
               .withColumn("size", element_at(col("details"), 2))
               .withColumn("quality", element_at(col("details"), 1))
              )
-display(mattressDF)
+display(mattress_df)
 
 # COMMAND ----------
 
@@ -121,58 +121,58 @@ display(mattressDF)
 # COMMAND ----------
 
 # MAGIC %md ### 3. Extract size and quality options from pillow purchases
-# MAGIC - Filter **`detailsDF`** for records where **`details`** contains "Pillow"
+# MAGIC - Filter **`details_df`** for records where **`details`** contains "Pillow"
 # MAGIC - Add a **`size`** column by extracting the element at position 1
 # MAGIC - Add a **`quality`** column by extracting the element at position 2
 # MAGIC 
 # MAGIC Note the positions of **`size`** and **`quality`** are switched for mattresses and pillows.
 # MAGIC 
-# MAGIC Save result as **`pillowDF`**.
+# MAGIC Save result as **`pillow_df`**.
 
 # COMMAND ----------
 
-pillowDF = (detailsDF
+pillow_df = (details_df
             .filter(array_contains(col("details"), "Pillow"))
             .withColumn("size", element_at(col("details"), 1))
             .withColumn("quality", element_at(col("details"), 2))
            )
-display(pillowDF)
+display(pillow_df)
 
 # COMMAND ----------
 
 # MAGIC %md ### 4. Combine data for mattress and pillows
 # MAGIC 
-# MAGIC - Perform a union on **`mattressDF`** and **`pillowDF`** by column names
+# MAGIC - Perform a union on **`mattress_df`** and **`pillow_df`** by column names
 # MAGIC - Drop the **`details`** column
 # MAGIC 
-# MAGIC Save the result as **`unionDF`**.
+# MAGIC Save the result as **`union_df`**.
 # MAGIC 
-# MAGIC <img src="https://files.training.databricks.com/images/icon_warn_32.png" alt="Warning"> The DataFrame <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.union.html" target="_blank">`union`</a> method resolves columns by position, as in standard SQL. You should use it only if the two DataFrames have exactly the same schema, including the column order. In contrast, the DataFrame <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.unionByName.html" target="_blank">`unionByName`</a> method resolves columns by name.
+# MAGIC <img src="https://files.training.databricks.com/images/icon_warn_32.png" alt="Warning"> The DataFrame <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.union.html" target="_blank">**`union`**</a> method resolves columns by position, as in standard SQL. You should use it only if the two DataFrames have exactly the same schema, including the column order. In contrast, the DataFrame <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.unionByName.html" target="_blank">**`unionByName`**</a> method resolves columns by name.
 
 # COMMAND ----------
 
-unionDF = mattressDF.unionByName(pillowDF).drop("details")
-display(unionDF)
+union_df = mattress_df.unionByName(pillow_df).drop("details")
+display(union_df)
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### 5. List all size and quality options bought by each user
 # MAGIC 
-# MAGIC - Group rows in **`unionDF`** by **`email`**
+# MAGIC - Group rows in **`union_df`** by **`email`**
 # MAGIC   - Collect the set of all items in **`size`** for each user and alias the column to "size options"
 # MAGIC   - Collect the set of all items in **`quality`** for each user and alias the column to "quality options"
 # MAGIC 
-# MAGIC Save the result as **`optionsDF`**.
+# MAGIC Save the result as **`options_df`**.
 
 # COMMAND ----------
 
-optionsDF = (unionDF
+options_df = (union_df
              .groupBy("email")
              .agg(collect_set("size").alias("size options"),
                   collect_set("quality").alias("quality options"))
             )
-display(optionsDF)
+display(options_df)
 
 # COMMAND ----------
 

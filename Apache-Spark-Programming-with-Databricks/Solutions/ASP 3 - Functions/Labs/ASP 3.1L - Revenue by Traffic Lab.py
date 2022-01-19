@@ -15,9 +15,9 @@
 # MAGIC 3. Clean revenue columns to have two decimal places
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: groupBy, sort, limit
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.Column.html?highlight=column#pyspark.sql.Column" target="_blank">Column</a>: alias, desc, cast, operators
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-in Functions</a>: avg, sum
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: **`groupBy`**, **`sort`**, **`limit`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.Column.html?highlight=column#pyspark.sql.Column" target="_blank">Column</a>: **`alias`**, **`desc`**, **`cast`**, **`operators`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-in Functions</a>: **`avg`**, **`sum`**
 
 # COMMAND ----------
 
@@ -34,7 +34,7 @@
 from pyspark.sql.functions import col
 
 # Purchase events logged on the BedBricks website
-df = (spark.read.parquet(eventsPath)
+df = (spark.read.parquet(events_path)
       .withColumn("revenue", col("ecommerce.purchase_revenue_in_usd"))
       .filter(col("revenue").isNotNull())
       .drop("event_name")
@@ -56,13 +56,13 @@ display(df)
 # ANSWER
 from pyspark.sql.functions import avg, col, sum
 
-trafficDF = (df
+traffic_df = (df
              .groupBy("traffic_source")
              .agg(sum(col("revenue")).alias("total_rev"),
                   avg(col("revenue")).alias("avg_rev"))
             )
 
-display(trafficDF)
+display(traffic_df)
 
 # COMMAND ----------
 
@@ -73,8 +73,8 @@ display(trafficDF)
 from pyspark.sql.functions import round
 
 expected1 = [(12704560.0, 1083.175), (78800000.3, 983.2915), (24797837.0, 1076.6221), (47218429.0, 1086.8303), (16177893.0, 1083.4378), (8044326.0, 1087.218)]
-testDF = trafficDF.sort("traffic_source").select(round("total_rev", 4).alias("total_rev"), round("avg_rev", 4).alias("avg_rev"))
-result1 = [(row.total_rev, row.avg_rev) for row in testDF.collect()]
+test_df = traffic_df.sort("traffic_source").select(round("total_rev", 4).alias("total_rev"), round("avg_rev", 4).alias("avg_rev"))
+result1 = [(row.total_rev, row.avg_rev) for row in test_df.collect()]
 
 assert(expected1 == result1)
 
@@ -87,8 +87,8 @@ assert(expected1 == result1)
 # COMMAND ----------
 
 # ANSWER
-topTrafficDF = trafficDF.sort(col("total_rev").desc()).limit(3)
-display(topTrafficDF)
+top_traffic_df = traffic_df.sort(col("total_rev").desc()).limit(3)
+display(top_traffic_df)
 
 # COMMAND ----------
 
@@ -97,8 +97,8 @@ display(topTrafficDF)
 # COMMAND ----------
 
 expected2 = [(78800000.3, 983.2915), (47218429.0, 1086.8303), (24797837.0, 1076.6221)]
-testDF = topTrafficDF.select(round("total_rev", 4).alias("total_rev"), round("avg_rev", 4).alias("avg_rev"))
-result2 = [(row.total_rev, row.avg_rev) for row in testDF.collect()]
+test_df = top_traffic_df.select(round("total_rev", 4).alias("total_rev"), round("avg_rev", 4).alias("avg_rev"))
+result2 = [(row.total_rev, row.avg_rev) for row in test_df.collect()]
 
 assert(expected2 == result2)
 
@@ -112,12 +112,12 @@ assert(expected2 == result2)
 # COMMAND ----------
 
 # ANSWER
-finalDF = (topTrafficDF
+final_df = (top_traffic_df
            .withColumn("avg_rev", (col("avg_rev") * 100).cast("long") / 100)
            .withColumn("total_rev", (col("total_rev") * 100).cast("long") / 100)
           )
 
-display(finalDF)
+display(final_df)
 
 # COMMAND ----------
 
@@ -126,7 +126,7 @@ display(finalDF)
 # COMMAND ----------
 
 expected3 = [(78800000.29, 983.29), (47218429.0, 1086.83), (24797837.0, 1076.62)]
-result3 = [(row.total_rev, row.avg_rev) for row in finalDF.collect()]
+result3 = [(row.total_rev, row.avg_rev) for row in final_df.collect()]
 
 assert(expected3 == result3)
 
@@ -141,12 +141,12 @@ assert(expected3 == result3)
 # ANSWER
 from pyspark.sql.functions import round
 
-bonusDF = (topTrafficDF
+bonus_df = (top_traffic_df
            .withColumn("avg_rev", round("avg_rev", 2))
            .withColumn("total_rev", round("total_rev", 2))
           )
 
-display(bonusDF)
+display(bonus_df)
 
 # COMMAND ----------
 
@@ -155,7 +155,7 @@ display(bonusDF)
 # COMMAND ----------
 
 expected4 = [(78800000.3, 983.29), (47218429.0, 1086.83), (24797837.0, 1076.62)]
-result4 = [(row.total_rev, row.avg_rev) for row in bonusDF.collect()]
+result4 = [(row.total_rev, row.avg_rev) for row in bonus_df.collect()]
 
 assert(expected4 == result4)
 
@@ -166,7 +166,7 @@ assert(expected4 == result4)
 # COMMAND ----------
 
 # ANSWER
-chainDF = (df
+chain_df = (df
            .groupBy("traffic_source")
            .agg(sum(col("revenue")).alias("total_rev"),
                 avg(col("revenue")).alias("avg_rev"))
@@ -176,7 +176,7 @@ chainDF = (df
            .withColumn("total_rev", round("total_rev", 2))
           )
 
-display(chainDF)
+display(chain_df)
 
 # COMMAND ----------
 
@@ -185,7 +185,7 @@ display(chainDF)
 # COMMAND ----------
 
 expected5 = [(78800000.3, 983.29), (47218429.0, 1086.83), (24797837.0, 1076.62)]
-result5 = [(row.total_rev, row.avg_rev) for row in chainDF.collect()]
+result5 = [(row.total_rev, row.avg_rev) for row in chain_df.collect()]
 
 assert(expected5 == result5)
 

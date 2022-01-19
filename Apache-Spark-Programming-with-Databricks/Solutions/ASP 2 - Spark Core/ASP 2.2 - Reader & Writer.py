@@ -16,12 +16,12 @@
 # MAGIC 1. Write DataFrame to a Delta table
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#input-and-output" target="_blank">DataFrameReader</a>: `csv`, `json`, `option`, `schema`
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#input-and-output" target="_blank">DataFrameWriter</a>: `mode`, `option`, `parquet`, `format`, `saveAsTable`
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.types.StructType.html#pyspark.sql.types.StructType" target="_blank">StructType</a>: `toDDL`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#input-and-output" target="_blank">DataFrameReader</a>: **`csv`**, **`json`**, **`option`**, **`schema`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#input-and-output" target="_blank">DataFrameWriter</a>: **`mode`**, **`option`**, **`parquet`**, **`format`**, **`saveAsTable`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.types.StructType.html#pyspark.sql.types.StructType" target="_blank">StructType</a>: **`toDDL`**
 # MAGIC 
 # MAGIC ##### Spark Types
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#data-types" target="_blank">Types</a>: `ArrayType`, `DoubleType`, `IntegerType`, `LongType`, `StringType`, `StructType`, `StructField`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html#data-types" target="_blank">Types</a>: **`ArrayType`**, **`DoubleType`**, **`IntegerType`**, **`LongType`**, **`StringType`**, **`StructType`**, **`StructField`**
 
 # COMMAND ----------
 
@@ -36,52 +36,52 @@
 # MAGIC spark.read.parquet("path/to/files")
 # MAGIC ```
 # MAGIC 
-# MAGIC DataFrameReader is accessible through the SparkSession attribute `read`. This class includes methods to load DataFrames from different external storage systems.
+# MAGIC DataFrameReader is accessible through the SparkSession attribute **`read`**. This class includes methods to load DataFrames from different external storage systems.
 
 # COMMAND ----------
 
 # MAGIC %md ### Read from CSV files
-# MAGIC Read from CSV with the DataFrameReader's `csv` method and the following options:
+# MAGIC Read from CSV with the DataFrameReader's **`csv`** method and the following options:
 # MAGIC 
 # MAGIC Tab separator, use first line as header, infer schema
 
 # COMMAND ----------
 
-usersCsvPath = f"{datasetsDir}/users/users-500k.csv"
+users_csv_path = f"{datasets_dir}/users/users-500k.csv"
 
-usersDF = (spark
+users_df = (spark
            .read
            .option("sep", "\t")
            .option("header", True)
            .option("inferSchema", True)
-           .csv(usersCsvPath)
+           .csv(users_csv_path)
           )
 
-usersDF.printSchema()
+users_df.printSchema()
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Spark's Python API also allows you to specify the DataFrameReader options as parameters to the `csv` method
+# MAGIC Spark's Python API also allows you to specify the DataFrameReader options as parameters to the **`csv`** method
 
 # COMMAND ----------
 
-usersDF = (spark
+users_df = (spark
            .read
-           .csv(usersCsvPath, sep="\t", header=True, inferSchema=True)
+           .csv(users_csv_path, sep="\t", header=True, inferSchema=True)
           )
 
-usersDF.printSchema()
+users_df.printSchema()
 
 # COMMAND ----------
 
-# MAGIC %md Manually define the schema by creating a `StructType` with column names and data types
+# MAGIC %md Manually define the schema by creating a **`StructType`** with column names and data types
 
 # COMMAND ----------
 
 from pyspark.sql.types import LongType, StringType, StructType, StructField
 
-userDefinedSchema = StructType([
+user_defined_schema = StructType([
     StructField("user_id", StringType(), True),
     StructField("user_first_touch_timestamp", LongType(), True),
     StructField("email", StringType(), True)
@@ -93,12 +93,12 @@ userDefinedSchema = StructType([
 
 # COMMAND ----------
 
-usersDF = (spark
+users_df = (spark
            .read
            .option("sep", "\t")
            .option("header", True)
-           .schema(userDefinedSchema)
-           .csv(usersCsvPath)
+           .schema(user_defined_schema)
+           .csv(users_csv_path)
           )
 
 # COMMAND ----------
@@ -107,43 +107,43 @@ usersDF = (spark
 
 # COMMAND ----------
 
-DDLSchema = "user_id string, user_first_touch_timestamp long, email string"
+ddl_schema = "user_id string, user_first_touch_timestamp long, email string"
 
-usersDF = (spark
+users_df = (spark
            .read
            .option("sep", "\t")
            .option("header", True)
-           .schema(DDLSchema)
-           .csv(usersCsvPath)
+           .schema(ddl_schema)
+           .csv(users_csv_path)
           )
 
 # COMMAND ----------
 
 # MAGIC %md ### Read from JSON files
 # MAGIC 
-# MAGIC Read from JSON with DataFrameReader's `json` method and the infer schema option
+# MAGIC Read from JSON with DataFrameReader's **`json`** method and the infer schema option
 
 # COMMAND ----------
 
-eventsJsonPath = f"{datasetsDir}/events/events-500k.json"
+events_json_path = f"{datasets_dir}/events/events-500k.json"
 
-eventsDF = (spark
+events_df = (spark
             .read
             .option("inferSchema", True)
-            .json(eventsJsonPath)
+            .json(events_json_path)
            )
 
-eventsDF.printSchema()
+events_df.printSchema()
 
 # COMMAND ----------
 
-# MAGIC %md Read data faster by creating a `StructType` with the schema names and data types
+# MAGIC %md Read data faster by creating a **`StructType`** with the schema names and data types
 
 # COMMAND ----------
 
 from pyspark.sql.types import ArrayType, DoubleType, IntegerType, LongType, StringType, StructType, StructField
 
-userDefinedSchema = StructType([
+user_defined_schema = StructType([
     StructField("device", StringType(), True),
     StructField("ecommerce", StructType([
         StructField("purchaseRevenue", DoubleType(), True),
@@ -172,24 +172,24 @@ userDefinedSchema = StructType([
     StructField("user_id", StringType(), True)
 ])
 
-eventsDF = (spark
+events_df = (spark
             .read
-            .schema(userDefinedSchema)
-            .json(eventsJsonPath)
+            .schema(user_defined_schema)
+            .json(events_json_path)
            )
 
 # COMMAND ----------
 
-# MAGIC %md You can use the `StructType` Scala method `toDDL` to have a DDL-formatted string created for you.
+# MAGIC %md You can use the **`StructType`** Scala method **`toDDL`** to have a DDL-formatted string created for you.
 # MAGIC 
-# MAGIC This is convenient when you need to get the DDL-formated string for ingesting CSV and JSON but you don't want to hand craft it or the `StructType` variant of the schema.
+# MAGIC This is convenient when you need to get the DDL-formated string for ingesting CSV and JSON but you don't want to hand craft it or the **`StructType`** variant of the schema.
 # MAGIC 
 # MAGIC However, this functionality is not available in Python but the power of the notebooks allows us to use both languages.
 
 # COMMAND ----------
 
 # Step 1 - use this trick to transfer a value (the dataset path) between Python and Scala using the shared spark-config
-spark.conf.set("com.whatever.your_scope.events_path", eventsJsonPath)
+spark.conf.set("com.whatever.your_scope.events_path", events_json_path)
 
 # COMMAND ----------
 
@@ -219,11 +219,11 @@ spark.conf.set("com.whatever.your_scope.events_path", eventsJsonPath)
 events_schema = "`device` STRING,`ecommerce` STRUCT<`purchase_revenue_in_usd`: DOUBLE, `total_item_quantity`: BIGINT, `unique_items`: BIGINT>,`event_name` STRING,`event_previous_timestamp` BIGINT,`event_timestamp` BIGINT,`geo` STRUCT<`city`: STRING, `state`: STRING>,`items` ARRAY<STRUCT<`coupon`: STRING, `item_id`: STRING, `item_name`: STRING, `item_revenue_in_usd`: DOUBLE, `price_in_usd`: DOUBLE, `quantity`: BIGINT>>,`traffic_source` STRING,`user_first_touch_timestamp` BIGINT,`user_id` STRING"
 
 # Step 6 - Read in the JSON data using our new DDL formatted string
-eventsDF = (spark.read
+events_df = (spark.read
                  .schema(events_schema)
-                 .json(eventsJsonPath))
+                 .json(events_json_path))
 
-display(eventsDF)
+display(events_df)
 
 # COMMAND ----------
 
@@ -249,56 +249,56 @@ display(eventsDF)
 # MAGIC )
 # MAGIC ```
 # MAGIC 
-# MAGIC DataFrameWriter is accessible through the SparkSession attribute `write`. This class includes methods to write DataFrames to different external storage systems.
+# MAGIC DataFrameWriter is accessible through the SparkSession attribute **`write`**. This class includes methods to write DataFrames to different external storage systems.
 
 # COMMAND ----------
 
 # MAGIC %md ### Write DataFrames to files
 # MAGIC 
-# MAGIC Write `usersDF` to parquet with DataFrameWriter's `parquet` method and the following configurations:
+# MAGIC Write **`users_df`** to parquet with DataFrameWriter's **`parquet`** method and the following configurations:
 # MAGIC 
 # MAGIC Snappy compression, overwrite mode
 
 # COMMAND ----------
 
-usersOutputPath = workingDir + "/users.parquet"
+users_output_path = working_dir + "/users.parquet"
 
-(usersDF
+(users_df
  .write
  .option("compression", "snappy")
  .mode("overwrite")
- .parquet(usersOutputPath)
+ .parquet(users_output_path)
 )
 
 # COMMAND ----------
 
 display(
-    dbutils.fs.ls(usersOutputPath)
+    dbutils.fs.ls(users_output_path)
 )
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC As with DataFrameReader, Spark's Python API also allows you to specify the DataFrameWriter options as parameters to the `parquet` method
+# MAGIC As with DataFrameReader, Spark's Python API also allows you to specify the DataFrameWriter options as parameters to the **`parquet`** method
 
 # COMMAND ----------
 
-(usersDF
+(users_df
  .write
- .parquet(usersOutputPath, compression="snappy", mode="overwrite")
+ .parquet(users_output_path, compression="snappy", mode="overwrite")
 )
 
 # COMMAND ----------
 
 # MAGIC %md ### Write DataFrames to tables
 # MAGIC 
-# MAGIC Write `eventsDF` to a table using the DataFrameWriter method `saveAsTable`
+# MAGIC Write **`events_df`** to a table using the DataFrameWriter method **`saveAsTable`**
 # MAGIC 
-# MAGIC <img src="https://files.training.databricks.com/images/icon_note_32.png" alt="Note"> This creates a global table, unlike the local view created by the DataFrame method `createOrReplaceTempView`
+# MAGIC <img src="https://files.training.databricks.com/images/icon_note_32.png" alt="Note"> This creates a global table, unlike the local view created by the DataFrame method **`createOrReplaceTempView`**
 
 # COMMAND ----------
 
-eventsDF.write.mode("overwrite").saveAsTable("events_p")
+events_df.write.mode("overwrite").saveAsTable("events_p")
 
 # COMMAND ----------
 
@@ -306,7 +306,7 @@ eventsDF.write.mode("overwrite").saveAsTable("events_p")
 
 # COMMAND ----------
 
-print(databaseName)
+print(database_name)
 
 # COMMAND ----------
 
@@ -334,17 +334,17 @@ print(databaseName)
 # MAGIC %md
 # MAGIC ### Write Results to a Delta Table
 # MAGIC 
-# MAGIC Write `eventsDF` with the DataFrameWriter's `save` method and the following configurations: Delta format, overwrite mode
+# MAGIC Write **`events_df`** with the DataFrameWriter's **`save`** method and the following configurations: Delta format, overwrite mode
 
 # COMMAND ----------
 
-eventsOutputPath = workingDir + "/delta/events"
+events_output_path = working_dir + "/delta/events"
 
-(eventsDF
+(events_df
  .write
  .format("delta")
  .mode("overwrite")
- .save(eventsOutputPath)
+ .save(events_output_path)
 )
 
 # COMMAND ----------

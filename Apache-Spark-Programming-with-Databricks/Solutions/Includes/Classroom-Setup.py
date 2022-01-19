@@ -3,15 +3,15 @@
 
 # COMMAND ----------
 
-salesPath =    f"{datasetsDir}/sales/sales.parquet"
-spark.sql(f"SET c.sales_path = {salesPath}")
+sales_path = f"{datasets_dir}/sales/sales.parquet"
+spark.sql(f"SET c.sales_path = {sales_path}")
 
-usersPath =    f"{datasetsDir}/users/users.parquet"
-spark.sql(f"SET c.users_path = {usersPath}")
+users_path = f"{datasets_dir}/users/users.parquet"
+spark.sql(f"SET c.users_path = {users_path}")
 
-eventsPath =   f"{datasetsDir}/events/events.parquet"
-spark.sql(f"SET c.events_path = {eventsPath}")
+events_path = f"{datasets_dir}/events/events.parquet"
+spark.sql(f"SET c.events_path = {events_path}")
 
-productsPath = f"{datasetsDir}/products/products.parquet"
-spark.sql(f"SET c.products_path = {productsPath}")
+products_path = f"{datasets_dir}/products/products.parquet"
+spark.sql(f"SET c.products_path = {products_path}")
 

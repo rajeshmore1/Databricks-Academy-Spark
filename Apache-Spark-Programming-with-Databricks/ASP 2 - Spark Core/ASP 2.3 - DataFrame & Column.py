@@ -17,8 +17,8 @@
 # MAGIC 1. Sort rows
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: `select`, `selectExpr`, `drop`, `withColumn`, `withColumnRenamed`, `filter`, `distinct`, `limit`, `sort`
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.Column.html" target="_blank">Column</a>: `alias`, `isin`, `cast`, `isNotNull`, `desc`, operators
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: **`select`**, **`selectExpr`**, **`drop`**, **`withColumn`**, **`withColumnRenamed`**, **`filter`**, **`distinct`**, **`limit`**, **`sort`**
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.Column.html" target="_blank">Column</a>: **`alias`**, **`isin`**, **`cast`**, **`isNotNull`**, **`desc`**, operators
 
 # COMMAND ----------
 
@@ -30,8 +30,8 @@
 
 # COMMAND ----------
 
-eventsDF = spark.read.parquet(eventsPath)
-display(eventsDF)
+events_df = spark.read.parquet(events_path)
+display(events_df)
 
 # COMMAND ----------
 
@@ -45,8 +45,8 @@ display(eventsDF)
 
 from pyspark.sql.functions import col
 
-eventsDF.device
-eventsDF["device"]
+events_df.device
+events_df["device"]
 col("device")
 
 # COMMAND ----------
@@ -89,14 +89,14 @@ col("event_timestamp").desc()
 
 # COMMAND ----------
 
-revDF = (eventsDF
+rev_df = (events_df
          .filter(col("ecommerce.purchase_revenue_in_usd").isNotNull())
          .withColumn("purchase_revenue", (col("ecommerce.purchase_revenue_in_usd") * 100).cast("int"))
          .withColumn("avg_purchase_revenue", col("ecommerce.purchase_revenue_in_usd") / col("ecommerce.total_item_quantity"))
          .sort(col("avg_purchase_revenue").desc())
         )
 
-display(revDF)
+display(rev_df)
 
 # COMMAND ----------
 
@@ -125,19 +125,19 @@ display(revDF)
 
 # COMMAND ----------
 
-devicesDF = eventsDF.select("user_id", "device")
-display(devicesDF)
+devices_df = events_df.select("user_id", "device")
+display(devices_df)
 
 # COMMAND ----------
 
 from pyspark.sql.functions import col
 
-locationsDF = eventsDF.select(
+locations_df = events_df.select(
     "user_id", 
     col("geo.city").alias("city"), 
     col("geo.state").alias("state")
 )
-display(locationsDF)
+display(locations_df)
 
 # COMMAND ----------
 
@@ -146,8 +146,8 @@ display(locationsDF)
 
 # COMMAND ----------
 
-appleDF = eventsDF.selectExpr("user_id", "device in ('macOS', 'iOS') as apple_user")
-display(appleDF)
+apple_df = events_df.selectExpr("user_id", "device in ('macOS', 'iOS') as apple_user")
+display(apple_df)
 
 # COMMAND ----------
 
@@ -158,13 +158,14 @@ display(appleDF)
 
 # COMMAND ----------
 
-anonymousDF = eventsDF.drop("user_id", "geo", "device")
-display(anonymousDF)
+anonymous_df = events_df.drop("user_id", "geo", "device")
+display(anonymous_df)
 
 # COMMAND ----------
 
-noSalesDF = eventsDF.drop(col("ecommerce"))
-display(noSalesDF)
+no_sales_df = events_df.drop(col("ecommerce"))
+display(no_sales_df)
+
 
 # COMMAND ----------
 
@@ -178,13 +179,13 @@ display(noSalesDF)
 
 # COMMAND ----------
 
-mobileDF = eventsDF.withColumn("mobile", col("device").isin("iOS", "Android"))
-display(mobileDF)
+mobile_df = events_df.withColumn("mobile", col("device").isin("iOS", "Android"))
+display(mobile_df)
 
 # COMMAND ----------
 
-purchaseQuantityDF = eventsDF.withColumn("purchase_quantity", col("ecommerce.total_item_quantity").cast("int"))
-purchaseQuantityDF.printSchema()
+purchase_quantity_df = events_df.withColumn("purchase_quantity", col("ecommerce.total_item_quantity").cast("int"))
+purchase_quantity_df.printSchema()
 
 # COMMAND ----------
 
@@ -193,8 +194,8 @@ purchaseQuantityDF.printSchema()
 
 # COMMAND ----------
 
-locationDF = eventsDF.withColumnRenamed("geo", "location")
-display(locationDF)
+location_df = events_df.withColumnRenamed("geo", "location")
+display(location_df)
 
 # COMMAND ----------
 
@@ -208,18 +209,18 @@ display(locationDF)
 
 # COMMAND ----------
 
-purchasesDF = eventsDF.filter("ecommerce.total_item_quantity > 0")
-display(purchasesDF)
+purchases_df = events_df.filter("ecommerce.total_item_quantity > 0")
+display(purchases_df)
 
 # COMMAND ----------
 
-revenueDF = eventsDF.filter(col("ecommerce.purchase_revenue_in_usd").isNotNull())
-display(revenueDF)
+revenue_df = events_df.filter(col("ecommerce.purchase_revenue_in_usd").isNotNull())
+display(revenue_df)
 
 # COMMAND ----------
 
-androidDF = eventsDF.filter((col("traffic_source") != "direct") & (col("device") == "Android"))
-display(androidDF)
+android_df = events_df.filter((col("traffic_source") != "direct") & (col("device") == "Android"))
+display(android_df)
 
 # COMMAND ----------
 
@@ -230,12 +231,12 @@ display(androidDF)
 
 # COMMAND ----------
 
-eventsDF.distinct()
+events_df.distinct()
 
 # COMMAND ----------
 
-distinctUsersDF = eventsDF.dropDuplicates(["user_id"])
-display(distinctUsersDF)
+distinct_users_df = events_df.dropDuplicates(["user_id"])
+display(distinct_users_df)
 
 # COMMAND ----------
 
@@ -244,8 +245,8 @@ display(distinctUsersDF)
 
 # COMMAND ----------
 
-limitDF = eventsDF.limit(100)
-display(limitDF)
+limit_df = events_df.limit(100)
+display(limit_df)
 
 # COMMAND ----------
 
@@ -261,23 +262,23 @@ display(limitDF)
 
 # COMMAND ----------
 
-increaseTimestampsDF = eventsDF.sort("event_timestamp")
-display(increaseTimestampsDF)
+increase_timestamps_df = events_df.sort("event_timestamp")
+display(increase_timestamps_df)
 
 # COMMAND ----------
 
-decreaseTimestampsDF = eventsDF.sort(col("event_timestamp").desc())
-display(decreaseTimestampsDF)
+decrease_timestamp_df = events_df.sort(col("event_timestamp").desc())
+display(decrease_timestamp_df)
 
 # COMMAND ----------
 
-increaseSessionsDF = eventsDF.orderBy(["user_first_touch_timestamp", "event_timestamp"])
-display(increaseSessionsDF)
+increase_sessions_df = events_df.orderBy(["user_first_touch_timestamp", "event_timestamp"])
+display(increase_sessions_df)
 
 # COMMAND ----------
 
-decreaseSessionsDF = eventsDF.sort(col("user_first_touch_timestamp").desc(), col("event_timestamp"))
-display(decreaseSessionsDF)
+decrease_sessions_df = events_df.sort(col("user_first_touch_timestamp").desc(), col("event_timestamp"))
+display(decrease_sessions_df)
 
 # COMMAND ----------
 

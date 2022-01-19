@@ -30,7 +30,7 @@
 # MAGIC %md ### 1. Read data stream
 # MAGIC - Use the schema stored in **`schema`**
 # MAGIC - Set to process 1 file per trigger
-# MAGIC - Read from Parquet files in the source directory specified by **`salesPath`**
+# MAGIC - Read from Parquet files in the source directory specified by **`sales_path`**
 # MAGIC 
 # MAGIC Assign the resulting DataFrame to **`df`**.
 
@@ -45,7 +45,7 @@ df = (spark
       .readStream
       .schema(schema)
       .option("maxFilesPerTrigger", 1)
-      .parquet(salesPath)
+      .parquet(sales_path)
      )
 
 # COMMAND ----------
@@ -63,14 +63,14 @@ assert df.columns == ["order_id", "email", "transaction_timestamp", "total_item_
 # MAGIC - Explode the **`items`** field in **`df`** with the results replacing the existing **`items`** field
 # MAGIC - Filter for records where **`items.coupon`** is not null
 # MAGIC 
-# MAGIC Assign the resulting DataFrame to **`couponSalesDF`**.
+# MAGIC Assign the resulting DataFrame to **`coupon_sales_df`**.
 
 # COMMAND ----------
 
 # ANSWER
 from pyspark.sql.functions import col, explode
 
-couponSalesDF = (df
+coupon_sales_df = (df
                  .withColumn("items", explode(col("items")))
                  .filter(col("items.coupon").isNotNull())
                 )
@@ -81,8 +81,8 @@ couponSalesDF = (df
 
 # COMMAND ----------
 
-schemaStr = str(couponSalesDF.schema)
-assert "StructField(items,StructType(List(StructField(coupon" in schemaStr, "items column was not exploded"
+schema_str = str(coupon_sales_df.schema)
+assert "StructField(items,StructType(List(StructField(coupon" in schema_str, "items column was not exploded"
 
 # COMMAND ----------
 
@@ -90,27 +90,27 @@ assert "StructField(items,StructType(List(StructField(coupon" in schemaStr, "ite
 # MAGIC - Configure the streaming query to write Parquet format files in "append" mode
 # MAGIC - Set the query name to "coupon_sales"
 # MAGIC - Set a trigger interval of 1 second
-# MAGIC - Set the checkpoint location to **`couponsCheckpointPath`**
-# MAGIC - Set the output path to **`couponsOutputPath`**
+# MAGIC - Set the checkpoint location to **`coupons_checkpoint_path`**
+# MAGIC - Set the output path to **`coupons_output_path`**
 # MAGIC 
-# MAGIC Start the streaming query and assign the resulting handle to **`couponSalesQuery`**.
+# MAGIC Start the streaming query and assign the resulting handle to **`coupon_sales_query`**.
 
 # COMMAND ----------
 
 # ANSWER
 
-couponsCheckpointPath = workingDir + "/coupon-sales/checkpoint"
-couponsOutputPath = workingDir + "/coupon-sales/output"
+coupons_checkpoint_path = working_dir + "/coupon-sales/checkpoint"
+coupons_output_path = working_dir + "/coupon-sales/output"
 
-couponSalesQuery = (couponSalesDF
-                    .writeStream
-                    .outputMode("append")
-                    .format("parquet")
-                    .queryName("coupon_sales")
-                    .trigger(processingTime="1 second")
-                    .option("checkpointLocation", couponsCheckpointPath)
-                    .start(couponsOutputPath)
-                   )
+coupon_sales_query = (coupon_sales_df
+                      .writeStream
+                      .outputMode("append")
+                      .format("parquet")
+                      .queryName("coupon_sales")
+                      .trigger(processingTime="1 second")
+                      .option("checkpointLocation", coupons_checkpoint_path)
+                      .start(coupons_output_path)
+                     )
 
 # COMMAND ----------
 
@@ -118,11 +118,11 @@ couponSalesQuery = (couponSalesDF
 
 # COMMAND ----------
 
-untilStreamIsReady("coupon_sales")
-assert couponSalesQuery.isActive
-assert len(dbutils.fs.ls(couponsOutputPath)) > 0
-assert len(dbutils.fs.ls(couponsCheckpointPath)) > 0
-assert "coupon_sales" in couponSalesQuery.lastProgress["name"]
+until_stream_is_ready("coupon_sales")
+assert coupon_sales_query.isActive
+assert len(dbutils.fs.ls(coupons_output_path)) > 0
+assert len(dbutils.fs.ls(coupons_checkpoint_path)) > 0
+assert "coupon_sales" in coupon_sales_query.lastProgress["name"]
 
 # COMMAND ----------
 
@@ -133,14 +133,14 @@ assert "coupon_sales" in couponSalesQuery.lastProgress["name"]
 # COMMAND ----------
 
 # ANSWER
-queryID = couponSalesQuery.id
-print(queryID)
+query_id = coupon_sales_query.id
+print(query_id)
 
 # COMMAND ----------
 
 # ANSWER
-queryStatus = couponSalesQuery.status
-print(queryStatus)
+query_status = coupon_sales_query.status
+print(query_status)
 
 # COMMAND ----------
 
@@ -148,8 +148,8 @@ print(queryStatus)
 
 # COMMAND ----------
 
-assert type(queryID) == str
-assert list(queryStatus.keys()) == ["message", "isDataAvailable", "isTriggerActive"]
+assert type(query_id) == str
+assert list(query_status.keys()) == ["message", "isDataAvailable", "isTriggerActive"]
 
 # COMMAND ----------
 
@@ -159,7 +159,7 @@ assert list(queryStatus.keys()) == ["message", "isDataAvailable", "isTriggerActi
 # COMMAND ----------
 
 # ANSWER
-couponSalesQuery.stop()
+coupon_sales_query.stop()
 
 # COMMAND ----------
 
@@ -167,7 +167,7 @@ couponSalesQuery.stop()
 
 # COMMAND ----------
 
-assert not couponSalesQuery.isActive
+assert not coupon_sales_query.isActive
 
 # COMMAND ----------
 
@@ -176,7 +176,7 @@ assert not couponSalesQuery.isActive
 # COMMAND ----------
 
 # ANSWER
-display(spark.read.parquet(couponsOutputPath))
+display(spark.read.parquet(coupons_output_path))
 
 # COMMAND ----------
 

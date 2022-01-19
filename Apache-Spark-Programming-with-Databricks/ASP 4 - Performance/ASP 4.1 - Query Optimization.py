@@ -17,11 +17,11 @@
 # MAGIC 1. No predicate pushdown
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: `explain`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html" target="_blank">DataFrame</a>: **`explain`**
 
 # COMMAND ----------
 
-# MAGIC %md Let’s run our set up cell, and get our initial DataFrame stored in the variable `df`. Displaying this DataFrame shows us events data.
+# MAGIC %md Let’s run our set up cell, and get our initial DataFrame stored in the variable **`df`**. Displaying this DataFrame shows us events data.
 
 # COMMAND ----------
 
@@ -29,20 +29,20 @@
 
 # COMMAND ----------
 
-df = spark.read.parquet(eventsPath)
+df = spark.read.parquet(events_path)
 display(df)
 
 # COMMAND ----------
 
 # MAGIC %md ### Logical Optimization
 # MAGIC 
-# MAGIC `explain(..)` prints the query plans, optionally formatted by a given explain mode. Compare the following logical plan & physical plan, noting how Catalyst handled the multiple `filter` transformations.
+# MAGIC **`explain(..)`** prints the query plans, optionally formatted by a given explain mode. Compare the following logical plan & physical plan, noting how Catalyst handled the multiple **`filter`** transformations.
 
 # COMMAND ----------
 
 from pyspark.sql.functions import col
 
-limitEventsDF = (df
+limit_events_df = (df
                  .filter(col("event_name") != "reviews")
                  .filter(col("event_name") != "checkout")
                  .filter(col("event_name") != "register")
@@ -53,16 +53,16 @@ limitEventsDF = (df
                  .filter(col("event_name") != "press")
                 )
 
-limitEventsDF.explain(True)
+limit_events_df.explain(True)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Of course, we could have written the query originally using a single `filter` condition ourselves. Compare the previous and following query plans.
+# MAGIC Of course, we could have written the query originally using a single **`filter`** condition ourselves. Compare the previous and following query plans.
 
 # COMMAND ----------
 
-betterDF = (df
+better_df = (df
             .filter((col("event_name").isNotNull()) &
                     (col("event_name") != "reviews") &
                     (col("event_name") != "checkout") &
@@ -74,7 +74,7 @@ betterDF = (df
                     (col("event_name") != "press"))
            )
 
-betterDF.explain(True)
+better_df.explain(True)
 
 # COMMAND ----------
 
@@ -83,7 +83,7 @@ betterDF.explain(True)
 
 # COMMAND ----------
 
-stupidDF = (df
+stupid_df = (df
             .filter(col("event_name") != "finalize")
             .filter(col("event_name") != "finalize")
             .filter(col("event_name") != "finalize")
@@ -91,16 +91,16 @@ stupidDF = (df
             .filter(col("event_name") != "finalize")
            )
 
-stupidDF.explain(True)
+stupid_df.explain(True)
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### Caching
 # MAGIC 
-# MAGIC By default the data of a DataFrame is present on a Spark cluster only while it is being processed during a query -- it is not automatically persisted on the cluster afterwards. (Spark is a data processing engine, not a data storage system.) You can explicity request Spark to persist a DataFrame on the cluster by invoking its `cache` method.
+# MAGIC By default the data of a DataFrame is present on a Spark cluster only while it is being processed during a query -- it is not automatically persisted on the cluster afterwards. (Spark is a data processing engine, not a data storage system.) You can explicity request Spark to persist a DataFrame on the cluster by invoking its **`cache`** method.
 # MAGIC 
-# MAGIC If you do cache a DataFrame, you should always explictly evict it from cache by invoking `unpersist` when you no longer need it.
+# MAGIC If you do cache a DataFrame, you should always explictly evict it from cache by invoking **`unpersist`** when you no longer need it.
 # MAGIC 
 # MAGIC <img src="https://files.training.databricks.com/images/icon_best_32.png" alt="Best Practice"> Caching a DataFrame can be appropriate if you are certain that you will use the same DataFrame multiple times, as in:
 # MAGIC 
@@ -126,29 +126,29 @@ stupidDF.explain(True)
 
 # COMMAND ----------
 
-jdbcURL = "jdbc:postgresql://54.213.33.240/training"
+jdbc_url = "jdbc:postgresql://54.213.33.240/training"
 
 # Username and Password w/read-only rights
-connProperties = {
+conn_properties = {
     "user" : "training",
     "password" : "training"
 }
 
-ppDF = (spark
+pp_df = (spark
         .read
         .jdbc(
-            url=jdbcURL,                  # the JDBC URL
+            url=jdbc_url,                  # the JDBC URL
             table="training.people_1m",   # the name of the table
             column="id",                  # the name of a column of an integral type that will be used for partitioning
             lowerBound=1,                 # the minimum value of columnName used to decide partition stride
             upperBound=1000000,           # the maximum value of columnName used to decide partition stride
             numPartitions=8,              # the number of partitions/connections
-            properties=connProperties     # the connection properties
+            properties=conn_properties     # the connection properties
         )
         .filter(col("gender") == "M")   # Filter the data by gender
        )
 
-ppDF.explain()
+pp_df.explain()
 
 # COMMAND ----------
 
@@ -162,23 +162,23 @@ ppDF.explain()
 
 # COMMAND ----------
 
-cachedDF = (spark
+cached_df = (spark
             .read
             .jdbc(
-                url=jdbcURL,
+                url=jdbc_url,
                 table="training.people_1m",
                 column="id",
                 lowerBound=1,
                 upperBound=1000000,
                 numPartitions=8,
-                properties=connProperties
+                properties=conn_properties
             )
            )
 
-cachedDF.cache()
-filteredDF = cachedDF.filter(col("gender") == "M")
+cached_df.cache()
+filtered_df = cached_df.filter(col("gender") == "M")
 
-filteredDF.explain()
+filtered_df.explain()
 
 # COMMAND ----------
 
@@ -193,7 +193,7 @@ filteredDF.explain()
 
 # COMMAND ----------
 
-cachedDF.unpersist()
+cached_df.unpersist()
 
 # COMMAND ----------
 

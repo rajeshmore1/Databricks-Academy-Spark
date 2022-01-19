@@ -14,7 +14,7 @@
 # MAGIC 
 # MAGIC ### BedBricks Case Study
 # MAGIC This course uses a case study that explores clickstream data for the online mattress retailer, BedBricks.  
-# MAGIC You are an analyst at BedBricks working with the following datasets: `events`, `sales`, `users`, and `products`.
+# MAGIC You are an analyst at BedBricks working with the following datasets: **`events`**, **`sales`**, **`users`**, and **`products`**.
 # MAGIC 
 # MAGIC ##### Tasks
 # MAGIC 1. View data files in DBFS using magic commands
@@ -31,7 +31,7 @@
 # MAGIC %md ### 1. List data files in DBFS using magic commands
 # MAGIC Use a magic command to display files located in the DBFS directory: **`dbfs:/databricks-datasets`**
 # MAGIC 
-# MAGIC <img src="https://files.training.databricks.com/images/icon_hint_32.png" alt="Hint"> You should see four items: `events`, `products`, `sales`, `users`
+# MAGIC <img src="https://files.training.databricks.com/images/icon_hint_32.png" alt="Hint"> You should see four items: **`events`**, **`products`**, **`sales`**, **`users`**
 
 # COMMAND ----------
 
@@ -44,7 +44,7 @@
 # MAGIC - Use **`dbutils`** to get the files at the directory above and save it to the variable **`files`**
 # MAGIC - Use the Databricks display() function to display the contents in **`files`**
 # MAGIC 
-# MAGIC <img src="https://files.training.databricks.com/images/icon_hint_32.png" alt="Hint"> You should see four items: `events`, `items`, `sales`, `users`
+# MAGIC <img src="https://files.training.databricks.com/images/icon_hint_32.png" alt="Hint"> You should see four items: **`events`**, **`items`**, **`sales`**, **`users`**
 
 # COMMAND ----------
 
@@ -74,7 +74,7 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %md ### 4. Execute SQL to explore BedBricks datasets
-# MAGIC Run SQL queries on the `products`, `sales`, and `events` tables to answer the following questions. 
+# MAGIC Run SQL queries on the **`products`**, **`sales`**, and **`events`** tables to answer the following questions. 
 # MAGIC - What products are available for purchase at BedBricks?
 # MAGIC - What is the average purchase revenue for a transaction at BedBricks?
 # MAGIC - What types of events are recorded on the BedBricks website?

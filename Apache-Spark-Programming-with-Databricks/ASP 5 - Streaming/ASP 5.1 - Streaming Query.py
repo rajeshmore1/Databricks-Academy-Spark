@@ -39,7 +39,7 @@ df = (spark
       .readStream
       .schema(schema)
       .option("maxFilesPerTrigger", 1)
-      .parquet(eventsPath)
+      .parquet(events_path)
      )
 df.isStreaming
 
@@ -52,12 +52,12 @@ df.isStreaming
 
 from pyspark.sql.functions import col, approx_count_distinct, count
 
-emailTrafficDF = (df
+email_traffic_df = (df
                   .filter(col("traffic_source") == "email")
                   .withColumn("mobile", col("device").isin(["iOS", "Android"]))
                   .select("user_id", "event_timestamp", "mobile")
                  )
-emailTrafficDF.isStreaming
+email_traffic_df.isStreaming
 
 # COMMAND ----------
 
@@ -67,17 +67,17 @@ emailTrafficDF.isStreaming
 
 # COMMAND ----------
 
-checkpointPath = f"{workingDir}/email_traffic/checkpoint"
-outputPath = f"{workingDir}/email_traffic/output"
+checkpoint_path = f"{working_dir}/email_traffic/checkpoint"
+output_path = f"{working_dir}/email_traffic/output"
 
-devicesQuery = (emailTrafficDF
+devices_query = (email_traffic_df
                 .writeStream
                 .outputMode("append")
                 .format("parquet")
                 .queryName("email_traffic")
                 .trigger(processingTime="1 second")
-                .option("checkpointLocation", checkpointPath)
-                .start(outputPath)
+                .option("checkpointLocation", checkpoint_path)
+                .start(output_path)
                )
 
 # COMMAND ----------
@@ -89,15 +89,15 @@ devicesQuery = (emailTrafficDF
 
 # COMMAND ----------
 
-devicesQuery.id
+devices_query.id
 
 # COMMAND ----------
 
-devicesQuery.status
+devices_query.status
 
 # COMMAND ----------
 
-devicesQuery.lastProgress
+devices_query.lastProgress
 
 # COMMAND ----------
 
@@ -105,11 +105,11 @@ import time
 # Run for 10 more seconds
 time.sleep(10) 
 
-devicesQuery.stop()
+devices_query.stop()
 
 # COMMAND ----------
 
-devicesQuery.awaitTermination()
+devices_query.awaitTermination()
 
 # COMMAND ----------
 

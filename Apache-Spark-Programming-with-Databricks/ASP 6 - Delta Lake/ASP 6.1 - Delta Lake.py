@@ -33,18 +33,18 @@
 
 # COMMAND ----------
 
-eventsDF = spark.read.parquet(eventsPath)
-display(eventsDF)
+events_df = spark.read.parquet(events_path)
+display(events_df)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Write the data in Delta format to the directory given by `deltaPath`.
+# MAGIC Write the data in Delta format to the directory given by **`deltaPath`**.
 
 # COMMAND ----------
 
-deltaPath = workingDir + "/delta-events"
-eventsDF.write.format("delta").mode("overwrite").save(deltaPath)
+delta_path = working_dir + "/delta-events"
+events_df.write.format("delta").mode("overwrite").save(delta_path)
 
 # COMMAND ----------
 
@@ -53,7 +53,7 @@ eventsDF.write.format("delta").mode("overwrite").save(deltaPath)
 
 # COMMAND ----------
 
-eventsDF.write.format("delta").mode("overwrite").saveAsTable("delta_events")
+events_df.write.format("delta").mode("overwrite").saveAsTable("delta_events")
 
 # COMMAND ----------
 
@@ -65,22 +65,22 @@ eventsDF.write.format("delta").mode("overwrite").saveAsTable("delta_events")
 
 from pyspark.sql.functions import col
 
-stateEventsDF = eventsDF.withColumn("state", col("geo.state"))
+state_events_df = events_df.withColumn("state", col("geo.state"))
 
-stateEventsDF.write.format("delta").mode("overwrite").partitionBy("state").option("overwriteSchema", "true").save(deltaPath)
+state_events_df.write.format("delta").mode("overwrite").partitionBy("state").option("overwriteSchema", "true").save(delta_path)
 
 # COMMAND ----------
 
 # MAGIC %md ### Understand the Transaction Log
 # MAGIC We can see how Delta stores the different state partitions in separate directories.
 # MAGIC 
-# MAGIC Additionally, we can also see a directory called `_delta_log`, which is the transaction log.
+# MAGIC Additionally, we can also see a directory called **`_delta_log`**, which is the transaction log.
 # MAGIC 
-# MAGIC When a Delta Lake dataset is created, its transaction log is automatically created in the `_delta_log` subdirectory.
+# MAGIC When a Delta Lake dataset is created, its transaction log is automatically created in the **`_delta_log`** subdirectory.
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(deltaPath))
+display(dbutils.fs.ls(delta_path))
 
 # COMMAND ----------
 
@@ -97,7 +97,7 @@ display(dbutils.fs.ls(deltaPath))
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(deltaPath + "/_delta_log/"))
+display(dbutils.fs.ls(delta_path + "/_delta_log/"))
 
 # COMMAND ----------
 
@@ -105,24 +105,24 @@ display(dbutils.fs.ls(deltaPath + "/_delta_log/"))
 # MAGIC 
 # MAGIC 
 # MAGIC The <a href="https://docs.databricks.com/delta/delta-utility.html" target="_blank">four columns</a> each represent a different part of the very first commit to the Delta Table, creating the table.
-# MAGIC - The `add` column has statistics about the DataFrame as a whole and individual columns.
-# MAGIC - The `commitInfo` column has useful information about what the operation was (WRITE or READ) and who executed the operation.
-# MAGIC - The `metaData` column contains information about the column schema.
-# MAGIC - The `protocol` version contains information about the minimum Delta version necessary to either write or read to this Delta Table.
+# MAGIC - The **`add`** column has statistics about the DataFrame as a whole and individual columns.
+# MAGIC - The **`commitInfo`** column has useful information about what the operation was (WRITE or READ) and who executed the operation.
+# MAGIC - The **`metaData`** column contains information about the column schema.
+# MAGIC - The **`protocol`** version contains information about the minimum Delta version necessary to either write or read to this Delta Table.
 
 # COMMAND ----------
 
-display(spark.read.json(deltaPath + "/_delta_log/00000000000000000000.json"))
+display(spark.read.json(delta_path + "/_delta_log/00000000000000000000.json"))
 
 # COMMAND ----------
 
 # MAGIC %md One key difference between these two transaction logs is the size of the JSON file, this file has 206 rows compared to the previous 7.
 # MAGIC 
-# MAGIC To understand why, let's take a look at the `commitInfo` column. We can see that in the `operationParameters` section, `partitionBy` has been filled in by the `state` column. Furthermore, if we look at the add section on row 3, we can see that a new section called `partitionValues` has appeared. As we saw above, Delta stores partitions separately in memory, however, it stores information about these partitions in the same transaction log file.
+# MAGIC To understand why, let's take a look at the **`commitInfo`** column. We can see that in the **`operationParameters`** section, **`partitionBy`** has been filled in by the **`state`** column. Furthermore, if we look at the add section on row 3, we can see that a new section called **`partitionValues`** has appeared. As we saw above, Delta stores partitions separately in memory, however, it stores information about these partitions in the same transaction log file.
 
 # COMMAND ----------
 
-display(spark.read.json(deltaPath + "/_delta_log/00000000000000000001.json"))
+display(spark.read.json(delta_path + "/_delta_log/00000000000000000001.json"))
 
 # COMMAND ----------
 
@@ -130,7 +130,7 @@ display(spark.read.json(deltaPath + "/_delta_log/00000000000000000001.json"))
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(deltaPath + "/state=CA/"))
+display(dbutils.fs.ls(delta_path + "/state=CA/"))
 
 # COMMAND ----------
 
@@ -138,7 +138,7 @@ display(dbutils.fs.ls(deltaPath + "/state=CA/"))
 
 # COMMAND ----------
 
-df = spark.read.format("delta").load(deltaPath)
+df = spark.read.format("delta").load(delta_path)
 display(df)
 
 # COMMAND ----------
@@ -149,16 +149,16 @@ display(df)
 
 # COMMAND ----------
 
-df_update = stateEventsDF.filter(col("device").isin(["Android", "iOS"]))
+df_update = state_events_df.filter(col("device").isin(["Android", "iOS"]))
 display(df_update)
 
 # COMMAND ----------
 
-df_update.write.format("delta").mode("overwrite").save(deltaPath)
+df_update.write.format("delta").mode("overwrite").save(delta_path)
 
 # COMMAND ----------
 
-df = spark.read.format("delta").load(deltaPath)
+df = spark.read.format("delta").load(delta_path)
 display(df)
 
 # COMMAND ----------
@@ -167,7 +167,7 @@ display(df)
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(deltaPath + "/state=CA/"))
+display(dbutils.fs.ls(delta_path + "/state=CA/"))
 
 # COMMAND ----------
 
@@ -180,7 +180,7 @@ display(dbutils.fs.ls(deltaPath + "/state=CA/"))
 # COMMAND ----------
 
 spark.sql("DROP TABLE IF EXISTS train_delta")
-spark.sql(f"CREATE TABLE train_delta USING DELTA LOCATION '{deltaPath}'")
+spark.sql(f"CREATE TABLE train_delta USING DELTA LOCATION '{delta_path}'")
 
 # COMMAND ----------
 
@@ -189,11 +189,11 @@ spark.sql(f"CREATE TABLE train_delta USING DELTA LOCATION '{deltaPath}'")
 
 # COMMAND ----------
 
-# MAGIC %md Using the `versionAsOf` option allows you to easily access previous versions of our Delta Table.
+# MAGIC %md Using the **`versionAsOf`** option allows you to easily access previous versions of our Delta Table.
 
 # COMMAND ----------
 
-df = spark.read.format("delta").option("versionAsOf", 0).load(deltaPath)
+df = spark.read.format("delta").option("versionAsOf", 0).load(delta_path)
 display(df)
 
 # COMMAND ----------
@@ -208,15 +208,15 @@ display(df)
 
 # TODO
 
-timeStampString = <FILL_IN>
-df = spark.read.format("delta").option("timestampAsOf", timeStampString).load(deltaPath)
+time_stamp_string = <FILL_IN>
+df = spark.read.format("delta").option("timestampAsOf", time_stamp_string).load(delta_path)
 display(df)
 
 # COMMAND ----------
 
 # MAGIC %md ### Vacuum 
 # MAGIC 
-# MAGIC Now that we're happy with our Delta Table, we can clean up our directory using `VACUUM`. Vacuum accepts a retention period in hours as an input.
+# MAGIC Now that we're happy with our Delta Table, we can clean up our directory using **`VACUUM`**. Vacuum accepts a retention period in hours as an input.
 
 # COMMAND ----------
 
@@ -226,8 +226,8 @@ display(df)
 
 # from delta.tables import *
 
-# deltaTable = DeltaTable.forPath(spark, deltaPath)
-# deltaTable.vacuum(0)
+# delta_table = DeltaTable.forPath(spark, delta_path)
+# delta_table.vacuum(0)
 
 # COMMAND ----------
 
@@ -238,8 +238,8 @@ display(df)
 from delta.tables import *
 
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
-deltaTable = DeltaTable.forPath(spark, deltaPath)
-deltaTable.vacuum(0)
+delta_table = DeltaTable.forPath(spark, delta_path)
+delta_table.vacuum(0)
 
 # COMMAND ----------
 
@@ -247,7 +247,7 @@ deltaTable.vacuum(0)
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(deltaPath + "/state=CA/"))
+display(dbutils.fs.ls(delta_path + "/state=CA/"))
 
 # COMMAND ----------
 
@@ -259,7 +259,7 @@ display(dbutils.fs.ls(deltaPath + "/state=CA/"))
 
 # COMMAND ----------
 
-# df = spark.read.format("delta").option("versionAsOf", 0).load(deltaPath)
+# df = spark.read.format("delta").option("versionAsOf", 0).load(delta_path)
 # display(df)
 
 # COMMAND ----------

@@ -55,17 +55,17 @@
 
 # COMMAND ----------
 
-dbutils.fs.head(f"{datasetsDir}/people/people-with-dups.txt")
+dbutils.fs.head(f"{datasets_dir}/people/people-with-dups.txt")
 
 # COMMAND ----------
 
 # ANSWER
 
-sourceFile = f"{datasetsDir}/people/people-with-dups.txt"
-deltaDestDir = workingDir + "/people"
+source_file = f"{datasets_dir}/people/people-with-dups.txt"
+delta_dest_dir = working_dir + "/people"
 
 # In case it already exists
-dbutils.fs.rm(deltaDestDir, True)
+dbutils.fs.rm(delta_dest_dir, True)
 
 # dropDuplicates() will introduce a shuffle, so it helps to reduce the number of post-shuffle partitions.
 spark.conf.set("spark.sql.shuffle.partitions", 8)
@@ -76,7 +76,7 @@ df = (spark
       .option("header", "true")
       .option("inferSchema", "true")
       .option("sep", ":")
-      .csv(sourceFile)
+      .csv(source_file)
      )
 
 # COMMAND ----------
@@ -84,7 +84,7 @@ df = (spark
 # ANSWER
 from pyspark.sql.functions import col, lower, translate
 
-dedupedDF = (df
+deduped_df = (df
              .select(col("*"),
                      lower(col("firstName")).alias("lcFirstName"),
                      lower(col("lastName")).alias("lcLastName"),
@@ -103,15 +103,15 @@ dedupedDF = (df
 
 # Now, write the results in Delta format as a single file. We'll also display the Delta files to make sure they were written as expected.
 
-(dedupedDF
+(deduped_df
  .repartition(1)
  .write
  .mode("overwrite")
  .format("delta")
- .save(deltaDestDir)
+ .save(delta_dest_dir)
 )
 
-display(dbutils.fs.ls(deltaDestDir))
+display(dbutils.fs.ls(delta_dest_dir))
 
 # COMMAND ----------
 
@@ -119,7 +119,7 @@ display(dbutils.fs.ls(deltaDestDir))
 
 # COMMAND ----------
 
-verify_files = dbutils.fs.ls(deltaDestDir)
+verify_files = dbutils.fs.ls(delta_dest_dir)
 verify_delta_format = False
 verify_num_data_files = 0
 for f in verify_files:
@@ -131,7 +131,7 @@ for f in verify_files:
 assert verify_delta_format, "Data not written in Delta format"
 assert verify_num_data_files == 1, "Expected 1 data file written"
 
-verify_record_count = spark.read.format("delta").load(deltaDestDir).count()
+verify_record_count = spark.read.format("delta").load(delta_dest_dir).count()
 assert verify_record_count == 100000, "Expected 100000 records in final result"
 
 del verify_files, verify_delta_format, verify_num_data_files, verify_record_count

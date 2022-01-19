@@ -21,8 +21,8 @@
 
 # COMMAND ----------
 
-salesDF = spark.read.parquet(salesPath)
-deltaSalesPath = workingDir + "/delta-sales"
+sales_df = spark.read.parquet(sales_path)
+delta_sales_path = working_dir + "/delta-sales"
 
 # COMMAND ----------
 
@@ -32,7 +32,7 @@ deltaSalesPath = workingDir + "/delta-sales"
 # COMMAND ----------
 
 # TODO
-salesDF.FILL_IN
+sales_df.FILL_IN
 
 # COMMAND ----------
 
@@ -40,7 +40,7 @@ salesDF.FILL_IN
 
 # COMMAND ----------
 
-assert len(dbutils.fs.ls(deltaSalesPath)) > 0
+assert len(dbutils.fs.ls(delta_sales_path)) > 0
 
 # COMMAND ----------
 
@@ -51,8 +51,8 @@ assert len(dbutils.fs.ls(deltaSalesPath)) > 0
 # COMMAND ----------
 
 # TODO
-updatedSalesDF = FILL_IN
-display(updatedSalesDF)
+updated_sales_df = FILL_IN
+display(updated_sales_df)
 
 # COMMAND ----------
 
@@ -62,7 +62,7 @@ display(updatedSalesDF)
 
 from pyspark.sql.types import IntegerType
 
-assert updatedSalesDF.schema[6].dataType == IntegerType()
+assert updated_sales_df.schema[6].dataType == IntegerType()
 
 # COMMAND ----------
 
@@ -74,7 +74,7 @@ assert updatedSalesDF.schema[6].dataType == IntegerType()
 # COMMAND ----------
 
 # TODO
-updatedSalesDF.FILL_IN
+updated_sales_df.FILL_IN
 
 # COMMAND ----------
 
@@ -82,7 +82,7 @@ updatedSalesDF.FILL_IN
 
 # COMMAND ----------
 
-assert spark.read.format("delta").load(deltaSalesPath).schema[6].dataType == IntegerType()
+assert spark.read.format("delta").load(delta_sales_path).schema[6].dataType == IntegerType()
 
 # COMMAND ----------
 
@@ -106,9 +106,9 @@ assert spark.read.format("delta").load(deltaSalesPath).schema[6].dataType == Int
 
 # COMMAND ----------
 
-salesDeltaDF = spark.sql("SELECT * FROM sales_delta")
-assert salesDeltaDF.count() == 210370
-assert salesDeltaDF.schema[6].dataType == IntegerType()
+sales_delta_df = spark.sql("SELECT * FROM sales_delta")
+assert sales_delta_df.count() == 210370
+assert sales_delta_df.schema[6].dataType == IntegerType()
 
 # COMMAND ----------
 
@@ -119,8 +119,8 @@ assert salesDeltaDF.schema[6].dataType == IntegerType()
 # COMMAND ----------
 
 # TODO
-oldSalesDF = FILL_IN
-display(oldSalesDF)
+old_sales_df = FILL_IN
+display(old_sales_df)
 
 # COMMAND ----------
 
@@ -128,7 +128,7 @@ display(oldSalesDF)
 
 # COMMAND ----------
 
-assert oldSalesDF.select(size(col("items"))).first()[0] == 1
+assert old_sales_df.select(size(col("items"))).first()[0] == 1
 
 # COMMAND ----------
 

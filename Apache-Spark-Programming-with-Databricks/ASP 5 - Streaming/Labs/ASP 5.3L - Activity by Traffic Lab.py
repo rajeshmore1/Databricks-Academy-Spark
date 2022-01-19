@@ -76,7 +76,7 @@ assert df.columns == ["device", "ecommerce", "event_name", "event_previous_times
 # TODO
 spark.FILL_IN
 
-trafficDF = df.FILL_IN
+traffic_df = df.FILL_IN
 
 # COMMAND ----------
 
@@ -84,12 +84,12 @@ trafficDF = df.FILL_IN
 
 # COMMAND ----------
 
-assert str(trafficDF.schema) == "StructType(List(StructField(traffic_source,StringType,true),StructField(active_users,LongType,false)))"
+assert str(traffic_df.schema) == "StructType(List(StructField(traffic_source,StringType,true),StructField(active_users,LongType,false)))"
 
 # COMMAND ----------
 
 # MAGIC %md ### 3. Execute query with display() and plot results
-# MAGIC - Execute results for **`trafficDF`** using display()
+# MAGIC - Execute results for **`traffic_df`** using display()
 # MAGIC - Plot the streaming query results as a bar graph
 
 # COMMAND ----------
@@ -99,8 +99,8 @@ assert str(trafficDF.schema) == "StructType(List(StructField(traffic_source,Stri
 # COMMAND ----------
 
 # MAGIC %md **CHECK YOUR WORK**
-# MAGIC - You bar chart should plot `traffic_source` on the x-axis and `active_users` on the y-axis
-# MAGIC - The top three traffic sources in descending order should be `google`, `facebook`, and `instagram`.
+# MAGIC - You bar chart should plot **`traffic_source`** on the x-axis and **`active_users`** on the y-axis
+# MAGIC - The top three traffic sources in descending order should be **`google`**, **`facebook`**, and **`instagram`**.
 
 # COMMAND ----------
 
@@ -112,7 +112,7 @@ assert str(trafficDF.schema) == "StructType(List(StructField(traffic_source,Stri
 # COMMAND ----------
 
 # TODO
-trafficQuery = (trafficDF.FILL_IN
+traffic_query = (trafficDF.FILL_IN
 )
 
 # COMMAND ----------
@@ -121,10 +121,10 @@ trafficQuery = (trafficDF.FILL_IN
 
 # COMMAND ----------
 
-untilStreamIsReady("active_users_by_traffic")
-assert trafficQuery.isActive
-assert "active_users_by_traffic" in trafficQuery.name
-assert trafficQuery.lastProgress["sink"]["description"] == "MemorySink"
+until_stream_is_ready("active_users_by_traffic")
+assert traffic_query.isActive
+assert "active_users_by_traffic" in traffic_query.name
+assert traffic_query.lastProgress["sink"]["description"] == "MemorySink"
 
 # COMMAND ----------
 
@@ -166,7 +166,7 @@ assert trafficQuery.lastProgress["sink"]["description"] == "MemorySink"
 
 # COMMAND ----------
 
-assert not trafficQuery.isActive
+assert not traffic_query.isActive
 
 # COMMAND ----------
 

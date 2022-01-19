@@ -4,84 +4,84 @@
 #############################################
 
 # Get all tags
-def getTags() -> dict:
+def get_tags() -> dict:
   return sc._jvm.scala.collection.JavaConversions.mapAsJavaMap(
     dbutils.entry_point.getDbutils().notebook().getContext().tags()
   )
 
 # Get a single tag's value
-def getTag(tagName: str, defaultValue: str = None) -> str:
-  values = getTags()[tagName]
+def get_tag(tag_name: str, default_value: str = None) -> str:
+  values = get_tags()[tag_name]
   try:
     if len(values) > 0:
       return values
   except:
-    return defaultValue
+    return default_value
 
 #############################################
 # USER, USERNAME, AND USERHOME FUNCTIONS
 #############################################
 
 # Get the user's username
-def getUsername() -> str:
+def get_username() -> str:
   import uuid
   try:
     return dbutils.widgets.get("databricksUsername")
   except:
-    return getTag("user", str(uuid.uuid1()).replace("-", ""))
+    return get_tag("user", str(uuid.uuid1()).replace("-", ""))
 
 # Get the user's userhome
-def getUserhome() -> str:
-  username = getUsername()
+def get_userhome() -> str:
+  username = get_username()
   return "dbfs:/user/{}".format(username)
 
-def getModuleName() -> str:
+def get_module_name() -> str:
   return "aspwd"
 
-def getLessonName() -> str:
+def get_lesson_name() -> str:
   # If not specified, use the notebook's name.
   return dbutils.entry_point.getDbutils().notebook().getContext().notebookPath().getOrElse(None).split("/")[-1]
 
-def getWorkingDir() -> str:
+def get_working_dir() -> str:
   import re
-  lessonName = re.sub("[^a-zA-Z0-9]", "_", getLessonName())
-  moduleName = re.sub(r"[^a-zA-Z0-9]", "_", getModuleName())
-  userhome = getUserhome()
-  return f"{userhome}/dbacademy/{moduleName}/{lessonName}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
+  lesson_name = re.sub("[^a-zA-Z0-9]", "_", get_lesson_name())
+  module_name = re.sub(r"[^a-zA-Z0-9]", "_", get_module_name())
+  userhome = get_userhome()
+  return f"{userhome}/dbacademy/{module_name}/{lesson_name}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
 
-def getRootDir() -> str:
+def get_root_dir() -> str:
   import re
-  moduleName = re.sub(r"[^a-zA-Z0-9]", "_", getModuleName())
-  userhome = getUserhome()
-  return f"{userhome}/dbacademy/{moduleName}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
+  module_name = re.sub(r"[^a-zA-Z0-9]", "_", get_module_name())
+  userhome = get_userhome()
+  return f"{userhome}/dbacademy/{module_name}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
 
 ############################################
 # USER DATABASE FUNCTIONS
 ############################################
 
-def getDatabaseName(username:str, moduleName:str, lessonName:str) -> str:
+def get_database_name(username:str, module_name:str, lesson_name:str) -> str:
   import re
   user = re.sub("[^a-zA-Z0-9]", "_", username)
-  module = re.sub("[^a-zA-Z0-9]", "_", moduleName)
-  lesson = re.sub("[^a-zA-Z0-9]", "_", lessonName)
-  databaseName = f"dbacademy_{user}_{module}_{lesson}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
-  return databaseName
+  module = re.sub("[^a-zA-Z0-9]", "_", module_name)
+  lesson = re.sub("[^a-zA-Z0-9]", "_", lesson_name)
+  database_name = f"dbacademy_{user}_{module}_{lesson}".replace("__", "_").replace("__", "_").replace("__", "_").replace("__", "_").lower()
+  return database_name
 
 
 # Create a user-specific database
-def createUserDatabase(username:str, moduleName:str, lessonName:str) -> str:
-  databaseName = getDatabaseName(username, moduleName, lessonName)
+def create_user_database(username:str, module_name:str, lesson_name:str) -> str:
+  database_name = get_database_name(username, module_name, lesson_name)
 
-  spark.sql("CREATE DATABASE IF NOT EXISTS {}".format(databaseName))
-  spark.sql("USE {}".format(databaseName))
+  spark.sql("CREATE DATABASE IF NOT EXISTS {}".format(database_name))
+  spark.sql("USE {}".format(database_name))
 
-  return databaseName
+  return database_name
 
 # ****************************************************************************
 # Utility method to determine whether a path exists
 # ****************************************************************************
 
-def pathExists(path):
+def path_exists(path):
   try:
     dbutils.fs.ls(path)
     return True
@@ -93,7 +93,7 @@ def pathExists(path):
 # Note: dbutils.fs.rm() does not appear to be truely recursive
 # ****************************************************************************
 
-def deletePath(path):
+def delete_path(path):
   files = dbutils.fs.ls(path)
 
   for file in files:
@@ -124,7 +124,7 @@ def classroom_cleanup(drop_database:bool = True):
         stream.awaitTermination()
       except: pass # Bury any exceptions
 
-  database = getDatabaseName(getUsername(), getModuleName(), getLessonName())
+  database = get_database_name(get_username(), get_module_name(), get_lesson_name())
 
   if drop_database:
     # The database should only be dropped in a "cleanup" notebook, not "setup"
@@ -136,23 +136,23 @@ def classroom_cleanup(drop_database:bool = True):
   else:
       # Drop all tables from the specified database
       for row in spark.sql(f"show tables from {database}").select("tableName").collect():
-        tableName = row["tableName"]
-        spark.sql("DROP TABLE if exists {database}.{tableName}")
+        table_name = row["tableName"]
+        spark.sql(f"DROP TABLE if exists {database}.{table_name}")
 
         # In some rare cases the files don't actually get removed.
         time.sleep(1) # Give it just a second...
         
-        hivePath = f"dbfs:/user/hive/warehouse/{database}.db/{tableName}"
-        dbutils.fs.rm(hivePath, True)
+        hive_path = f"dbfs:/user/hive/warehouse/{database}.db/{table_name}"
+        dbutils.fs.rm(hive_path, True)
 
   # Remove any files that may have been created from previous runs
-  if pathExists(getWorkingDir()):
-    deletePath(getWorkingDir())
-    print(f"Deleted the working directory {getWorkingDir()}")
+  if path_exists(get_working_dir()):
+    delete_path(get_working_dir())
+    print(f"Deleted the working directory {get_working_dir()}")
 
 
 # Utility method to delete a database
-def deleteTables(database):
+def delete_tables(database):
   spark.sql("DROP DATABASE IF EXISTS {} CASCADE".format(database))
 
 # ****************************************************************************
@@ -171,18 +171,18 @@ class FILL_IN:
 # Set up student environment
 ############################################
 
-moduleName = getModuleName()
-username = getUsername()
-lessonName = getLessonName()
-userhome = getUserhome()
+module_name = get_module_name()
+username = get_username()
+lesson_name = get_lesson_name()
+userhome = get_userhome()
 
-workingDir = getWorkingDir()
-dbutils.fs.mkdirs(workingDir)
+working_dir = get_working_dir()
+dbutils.fs.mkdirs(working_dir)
 
-workingDirRoot = getRootDir()
-datasetsDir = f"{workingDirRoot}/datasets"
-spark.conf.set("com.databricks.training.aspwd.datasetsDir", datasetsDir)
-databaseName = createUserDatabase(username, moduleName, lessonName)
+working_dir_root = get_root_dir()
+datasets_dir = f"{working_dir_root}/datasets"
+spark.conf.set("com.databricks.training.aspwd.datasetsDir", datasets_dir)
+database_name = create_user_database(username, module_name, lesson_name)
 
 classroom_cleanup(drop_database=False)
 

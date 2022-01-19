@@ -55,17 +55,17 @@
 
 # COMMAND ----------
 
-dbutils.fs.head(f"{datasetsDir}/people/people-with-dups.txt")
+dbutils.fs.head(f"{datasets_dir}/people/people-with-dups.txt")
 
 # COMMAND ----------
 
 # TODO
 
-sourceFile = f"{datasetsDir}/people/people-with-dups.txt"
-destFile = workingDir + "/people.parquet"
+source_file = f"{datasets_dir}/people/people-with-dups.txt"
+dest_file = working_dir + "/people.parquet"
 
 # In case it already exists
-dbutils.fs.rm(destFile, True)
+dbutils.fs.rm(dest_file, True)
 
 # Complete your work here...
 
@@ -76,7 +76,7 @@ dbutils.fs.rm(destFile, True)
 
 # COMMAND ----------
 
-verify_files = dbutils.fs.ls(deltaDestDir)
+verify_files = dbutils.fs.ls(delta_dest_dir)
 verify_delta_format = False
 verify_num_data_files = 0
 for f in verify_files:
@@ -88,7 +88,7 @@ for f in verify_files:
 assert verify_delta_format, "Data not written in Delta format"
 assert verify_num_data_files == 1, "Expected 1 data file written"
 
-verify_record_count = spark.read.format("delta").load(deltaDestDir).count()
+verify_record_count = spark.read.format("delta").load(delta_dest_dir).count()
 assert verify_record_count == 100000, "Expected 100000 records in final result"
 
 del verify_files, verify_delta_format, verify_num_data_files, verify_record_count

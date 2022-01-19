@@ -16,16 +16,16 @@
 # MAGIC 1. Join DataFrames
 # MAGIC 
 # MAGIC ##### Methods
-# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrameNaFunctions.html" target="_blank">DataFrameNaFunctions</a>: `fill`
+# MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrameNaFunctions.html" target="_blank">DataFrameNaFunctions</a>: **`fill`**
 # MAGIC - <a href="https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql.html?#functions" target="_blank">Built-In Functions</a>:
-# MAGIC   - Aggregate: `collect_set`
-# MAGIC   - Collection: `explode`
-# MAGIC   - Non-aggregate and miscellaneous: `col`, `lit`
+# MAGIC   - Aggregate: **`collect_set`**
+# MAGIC   - Collection: **`explode`**
+# MAGIC   - Non-aggregate and miscellaneous: **`col`**, **`lit`**
 
 # COMMAND ----------
 
 # MAGIC %md ### DataFrameNaFunctions
-# MAGIC <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrameNaFunctions.html" target="_blank">DataFrameNaFunctions</a> is a DataFrame submodule with methods for handling null values. Obtain an instance of DataFrameNaFunctions by accessing the `na` attribute of a DataFrame.
+# MAGIC <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrameNaFunctions.html" target="_blank">DataFrameNaFunctions</a> is a DataFrame submodule with methods for handling null values. Obtain an instance of DataFrameNaFunctions by accessing the **`na`** attribute of a DataFrame.
 # MAGIC 
 # MAGIC | Method | Description |
 # MAGIC | --- | --- |
@@ -48,7 +48,7 @@
 # COMMAND ----------
 
 # MAGIC %md ### Joining DataFrames
-# MAGIC The DataFrame <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.join.html?highlight=join#pyspark.sql.DataFrame.join" target="_blank">`join`</a> method joins two DataFrames based on a given join expression. Several different types of joins are supported. For example:
+# MAGIC The DataFrame <a href="https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.join.html?highlight=join#pyspark.sql.DataFrame.join" target="_blank">**`join`**</a> method joins two DataFrames based on a given join expression. Several different types of joins are supported. For example:
 # MAGIC 
 # MAGIC ```
 # MAGIC # Inner join based on equal values of a shared column called "name" (i.e., an equi join)
