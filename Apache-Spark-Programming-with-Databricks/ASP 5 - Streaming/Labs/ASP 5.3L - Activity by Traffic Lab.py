@@ -36,14 +36,10 @@
 
 # COMMAND ----------
 
-schema = "device STRING, ecommerce STRUCT<purchase_revenue_in_usd: DOUBLE, total_item_quantity: BIGINT, unique_items: BIGINT>, event_name STRING, event_previous_timestamp BIGINT, event_timestamp BIGINT, geo STRUCT<city: STRING, state: STRING>, items ARRAY<STRUCT<coupon: STRING, item_id: STRING, item_name: STRING, item_revenue_in_usd: DOUBLE, price_in_usd: DOUBLE, quantity: BIGINT>>, traffic_source STRING, user_first_touch_timestamp BIGINT, user_id STRING"
-
-# COMMAND ----------
-
 # MAGIC %md ### 1. Read data stream
 # MAGIC - Use schema stored in **`schema`**
 # MAGIC - Set to process 1 file per trigger
-# MAGIC - Read from parquet with filepath stored in **`eventsPath`**
+# MAGIC - Read from Delta with filepath stored in **`events_path`**
 # MAGIC 
 # MAGIC Assign the resulting DataFrame to **`df`**.
 
@@ -56,7 +52,7 @@ df.isStreaming
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -80,7 +76,7 @@ traffic_df = df.FILL_IN
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -98,7 +94,7 @@ assert str(traffic_df.schema) == "StructType(List(StructField(traffic_source,Str
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 # MAGIC - You bar chart should plot **`traffic_source`** on the x-axis and **`active_users`** on the y-axis
 # MAGIC - The top three traffic sources in descending order should be **`google`**, **`facebook`**, and **`instagram`**.
 
@@ -112,12 +108,12 @@ assert str(traffic_df.schema) == "StructType(List(StructField(traffic_source,Str
 # COMMAND ----------
 
 # TODO
-traffic_query = (trafficDF.FILL_IN
+traffic_query = (traffic_df.FILL_IN
 )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **4.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -138,7 +134,7 @@ assert traffic_query.lastProgress["sink"]["description"] == "MemorySink"
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**  
+# MAGIC %md **5.1: CHECK YOUR WORK**  
 # MAGIC Your query should eventually result in the following values.
 # MAGIC 
 # MAGIC |traffic_source|active_users|
@@ -162,7 +158,7 @@ assert traffic_query.lastProgress["sink"]["description"] == "MemorySink"
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **6.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 

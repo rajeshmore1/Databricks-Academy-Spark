@@ -30,7 +30,7 @@
 # COMMAND ----------
 
 # MAGIC %md ### Setup
-# MAGIC Run classroom setup to mount Databricks training datasets and create your own database for BedBricks.
+# MAGIC Run classroom setup to [mount](https://docs.databricks.com/data/databricks-file-system.html#mount-storage) Databricks training datasets and create your own database for BedBricks.
 # MAGIC 
 # MAGIC Use the **`%run`** magic command to run another notebook within a notebook
 
@@ -189,7 +189,7 @@ display(files)
 
 # MAGIC %md ## Our First Table
 # MAGIC 
-# MAGIC Is located in the path identfied by **`eventsPath`** (a variable we created for you).
+# MAGIC Is located in the path identfied by **`events_path`** (a variable we created for you).
 # MAGIC 
 # MAGIC We can see those files by running the following cell
 
@@ -219,7 +219,7 @@ spark.sql(f"SET c.events_path = {events_path}")
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC CREATE TABLE IF NOT EXISTS events USING parquet OPTIONS (path "${c.events_path}");
+# MAGIC CREATE TABLE IF NOT EXISTS events USING delta OPTIONS (path "${c.events_path}");
 
 # COMMAND ----------
 

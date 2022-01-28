@@ -29,18 +29,17 @@
 
 # MAGIC %md ### Build streaming DataFrames
 # MAGIC 
-# MAGIC Obtain an initial streaming DataFrame from a Parquet-format file source.
+# MAGIC Obtain an initial streaming DataFrame from a Delta-format file source.
 
 # COMMAND ----------
 
-schema = "device STRING, ecommerce STRUCT<purchase_revenue_in_usd: DOUBLE, total_item_quantity: BIGINT, unique_items: BIGINT>, event_name STRING, event_previous_timestamp BIGINT, event_timestamp BIGINT, geo STRUCT<city: STRING, state: STRING>, items ARRAY<STRUCT<coupon: STRING, item_id: STRING, item_name: STRING, item_revenue_in_usd: DOUBLE, price_in_usd: DOUBLE, quantity: BIGINT>>, traffic_source STRING, user_first_touch_timestamp BIGINT, user_id STRING"
-
 df = (spark
       .readStream
-      .schema(schema)
       .option("maxFilesPerTrigger", 1)
-      .parquet(events_path)
+      .format("delta")
+      .load(events_path)
      )
+
 df.isStreaming
 
 # COMMAND ----------
@@ -53,10 +52,11 @@ df.isStreaming
 from pyspark.sql.functions import col, approx_count_distinct, count
 
 email_traffic_df = (df
-                  .filter(col("traffic_source") == "email")
-                  .withColumn("mobile", col("device").isin(["iOS", "Android"]))
-                  .select("user_id", "event_timestamp", "mobile")
-                 )
+                    .filter(col("traffic_source") == "email")
+                    .withColumn("mobile", col("device").isin(["iOS", "Android"]))
+                    .select("user_id", "event_timestamp", "mobile")
+                   )
+
 email_traffic_df.isStreaming
 
 # COMMAND ----------
@@ -71,14 +71,14 @@ checkpoint_path = f"{working_dir}/email_traffic/checkpoint"
 output_path = f"{working_dir}/email_traffic/output"
 
 devices_query = (email_traffic_df
-                .writeStream
-                .outputMode("append")
-                .format("parquet")
-                .queryName("email_traffic")
-                .trigger(processingTime="1 second")
-                .option("checkpointLocation", checkpoint_path)
-                .start(output_path)
-               )
+                 .writeStream
+                 .outputMode("append")
+                 .format("delta")
+                 .queryName("email_traffic")
+                 .trigger(processingTime="1 second")
+                 .option("checkpointLocation", checkpoint_path)
+                 .start(output_path)
+                )
 
 # COMMAND ----------
 

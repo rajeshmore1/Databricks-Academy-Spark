@@ -28,7 +28,7 @@
 
 # COMMAND ----------
 
-events_df = spark.read.parquet(events_path)
+events_df = spark.read.format("delta").load(events_path)
 display(events_df)
 
 # COMMAND ----------
@@ -38,15 +38,13 @@ display(events_df)
 
 # COMMAND ----------
 
-# ANSWER
-from pyspark.sql.functions import col
-
-revenue_df = events_df.withColumn("revenue", col("ecommerce.purchase_revenue_in_usd"))
+# TODO
+revenue_df = events_df.FILL_IN
 display(revenue_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -62,13 +60,13 @@ assert(expected1 == result1)
 
 # COMMAND ----------
 
-# ANSWER
-purchases_df = revenue_df.filter(col("revenue").isNotNull())
+# TODO
+purchases_df = revenue_df.FILL_IN
 display(purchases_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -85,37 +83,31 @@ assert purchases_df.filter(col("revenue").isNull()).count() == 0, "Nulls in 'rev
 
 # COMMAND ----------
 
-# ANSWER
-
-# Method 1
-distinct_df1 = purchases_df.select("event_name").distinct()
-
-# Method 2
-distinct_df2 = purchases_df.dropDuplicates(["event_name"])
-
-display(distinct_df1)
+# TODO
+distinct_df = purchases_df.FILL_IN
+display(distinct_df)
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### 4. Drop unneeded column
-# MAGIC Since there's only one event type, drop **`event_name`** from **`purchasesDF`**.
+# MAGIC Since there's only one event type, drop **`event_name`** from **`purchases_df`**.
 
 # COMMAND ----------
 
-# ANSWER
-final_df = purchases_df.drop("event_name")
+# TODO
+final_df = purchases_df.FILL_IN
 display(final_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **4.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
 expected_columns = {"device", "ecommerce", "event_previous_timestamp", "event_timestamp",
                     "geo", "items", "revenue", "traffic_source",
-                   "user_first_touch_timestamp", "user_id"}
+                    "user_first_touch_timestamp", "user_id"}
 assert(set(final_df.columns) == expected_columns)
 
 # COMMAND ----------
@@ -124,18 +116,16 @@ assert(set(final_df.columns) == expected_columns)
 
 # COMMAND ----------
 
-# ANSWER
+# TODO
 final_df = (events_df
-           .withColumn("revenue", col("ecommerce.purchase_revenue_in_usd"))
-           .filter(col("revenue").isNotNull())
-           .drop("event_name")
-          )
+  .FILL_IN
+)
 
 display(final_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **5.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 

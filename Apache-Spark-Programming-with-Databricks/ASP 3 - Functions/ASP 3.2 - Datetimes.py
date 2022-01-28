@@ -33,7 +33,7 @@
 
 from pyspark.sql.functions import col
 
-df = spark.read.parquet(events_path).select("user_id", col("event_timestamp").alias("timestamp"))
+df = spark.read.format("delta").load(events_path).select("user_id", col("event_timestamp").alias("timestamp"))
 display(df)
 
 # COMMAND ----------
@@ -108,9 +108,9 @@ display(timestamp_df)
 from pyspark.sql.functions import date_format
 
 formatted_df = (timestamp_df
-               .withColumn("date string", date_format("timestamp", "MMMM dd, yyyy"))
-               .withColumn("time string", date_format("timestamp", "HH:mm:ss.SSSSSS"))
-              )
+                .withColumn("date string", date_format("timestamp", "MMMM dd, yyyy"))
+                .withColumn("time string", date_format("timestamp", "HH:mm:ss.SSSSSS"))
+               )
 display(formatted_df)
 
 # COMMAND ----------
@@ -129,12 +129,12 @@ display(formatted_df)
 from pyspark.sql.functions import year, month, dayofweek, minute, second
 
 datetime_df = (timestamp_df
-              .withColumn("year", year(col("timestamp")))
-              .withColumn("month", month(col("timestamp")))
-              .withColumn("dayofweek", dayofweek(col("timestamp")))
-              .withColumn("minute", minute(col("timestamp")))
-              .withColumn("second", second(col("timestamp")))
-             )
+               .withColumn("year", year(col("timestamp")))
+               .withColumn("month", month(col("timestamp")))
+               .withColumn("dayofweek", dayofweek(col("timestamp")))
+               .withColumn("minute", minute(col("timestamp")))
+               .withColumn("second", second(col("timestamp")))
+              )
 display(datetime_df)
 
 # COMMAND ----------

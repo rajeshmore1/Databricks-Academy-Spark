@@ -29,7 +29,7 @@
 
 # COMMAND ----------
 
-df = spark.read.parquet(events_path)
+df = spark.read.format("delta").load(events_path)
 display(df)
 
 # COMMAND ----------
@@ -43,15 +43,15 @@ display(df)
 from pyspark.sql.functions import col
 
 limit_events_df = (df
-                 .filter(col("event_name") != "reviews")
-                 .filter(col("event_name") != "checkout")
-                 .filter(col("event_name") != "register")
-                 .filter(col("event_name") != "email_coupon")
-                 .filter(col("event_name") != "cc_info")
-                 .filter(col("event_name") != "delivery")
-                 .filter(col("event_name") != "shipping_info")
-                 .filter(col("event_name") != "press")
-                )
+                   .filter(col("event_name") != "reviews")
+                   .filter(col("event_name") != "checkout")
+                   .filter(col("event_name") != "register")
+                   .filter(col("event_name") != "email_coupon")
+                   .filter(col("event_name") != "cc_info")
+                   .filter(col("event_name") != "delivery")
+                   .filter(col("event_name") != "shipping_info")
+                   .filter(col("event_name") != "press")
+                  )
 
 limit_events_df.explain(True)
 
@@ -63,16 +63,16 @@ limit_events_df.explain(True)
 # COMMAND ----------
 
 better_df = (df
-            .filter((col("event_name").isNotNull()) &
-                    (col("event_name") != "reviews") &
-                    (col("event_name") != "checkout") &
-                    (col("event_name") != "register") &
-                    (col("event_name") != "email_coupon") &
-                    (col("event_name") != "cc_info") &
-                    (col("event_name") != "delivery") &
-                    (col("event_name") != "shipping_info") &
-                    (col("event_name") != "press"))
-           )
+             .filter((col("event_name").isNotNull()) &
+                     (col("event_name") != "reviews") &
+                     (col("event_name") != "checkout") &
+                     (col("event_name") != "register") &
+                     (col("event_name") != "email_coupon") &
+                     (col("event_name") != "cc_info") &
+                     (col("event_name") != "delivery") &
+                     (col("event_name") != "shipping_info") &
+                     (col("event_name") != "press"))
+            )
 
 better_df.explain(True)
 
@@ -84,12 +84,12 @@ better_df.explain(True)
 # COMMAND ----------
 
 stupid_df = (df
-            .filter(col("event_name") != "finalize")
-            .filter(col("event_name") != "finalize")
-            .filter(col("event_name") != "finalize")
-            .filter(col("event_name") != "finalize")
-            .filter(col("event_name") != "finalize")
-           )
+             .filter(col("event_name") != "finalize")
+             .filter(col("event_name") != "finalize")
+             .filter(col("event_name") != "finalize")
+             .filter(col("event_name") != "finalize")
+             .filter(col("event_name") != "finalize")
+            )
 
 stupid_df.explain(True)
 
@@ -135,18 +135,17 @@ conn_properties = {
 }
 
 pp_df = (spark
-        .read
-        .jdbc(
-            url=jdbc_url,                  # the JDBC URL
-            table="training.people_1m",   # the name of the table
-            column="id",                  # the name of a column of an integral type that will be used for partitioning
-            lowerBound=1,                 # the minimum value of columnName used to decide partition stride
-            upperBound=1000000,           # the maximum value of columnName used to decide partition stride
-            numPartitions=8,              # the number of partitions/connections
-            properties=conn_properties     # the connection properties
+         .read
+         .jdbc(url=jdbc_url,                 # the JDBC URL
+               table="training.people_1m",   # the name of the table
+               column="id",                  # the name of a column of an integral type that will be used for partitioning
+               lowerBound=1,                 # the minimum value of columnName used to decide partition stride
+               upperBound=1000000,           # the maximum value of columnName used to decide partition stride
+               numPartitions=8,              # the number of partitions/connections
+               properties=conn_properties    # the connection properties
+              )
+         .filter(col("gender") == "M")   # Filter the data by gender
         )
-        .filter(col("gender") == "M")   # Filter the data by gender
-       )
 
 pp_df.explain()
 
@@ -164,16 +163,15 @@ pp_df.explain()
 
 cached_df = (spark
             .read
-            .jdbc(
-                url=jdbc_url,
-                table="training.people_1m",
-                column="id",
-                lowerBound=1,
-                upperBound=1000000,
-                numPartitions=8,
-                properties=conn_properties
+            .jdbc(url=jdbc_url,
+                  table="training.people_1m",
+                  column="id",
+                  lowerBound=1,
+                  upperBound=1000000,
+                  numPartitions=8,
+                  properties=conn_properties
+                 )
             )
-           )
 
 cached_df.cache()
 filtered_df = cached_df.filter(col("gender") == "M")

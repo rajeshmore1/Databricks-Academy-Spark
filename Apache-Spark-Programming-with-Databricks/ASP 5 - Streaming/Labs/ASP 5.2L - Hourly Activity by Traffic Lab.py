@@ -50,11 +50,11 @@ df = (spark
 
 # TODO
 events_df = (df.FILL_IN
-)
+            )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -76,12 +76,12 @@ assert "StructField(createdAt,TimestampType,true" in str(events_df.schema)
 # TODO
 spark.FILL_IN
 
-traffic_df = (eventsDF.FILL_IN
+traffic_df = (events_df.FILL_IN
 )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -104,7 +104,7 @@ assert str(traffic_df.schema) == "StructType(List(StructField(traffic_source,Str
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 # MAGIC 
 # MAGIC - The bar chart should plot **`hour`** on the x-axis and **`active_users`** on the y-axis
 # MAGIC - Six bars should appear at every hour for all traffic sources
@@ -125,7 +125,7 @@ for s in FILL_IN:
 
 # COMMAND ----------
 
-# MAGIC %md %md **CHECK YOUR WORK**  
+# MAGIC %md **4.1: CHECK YOUR WORK**  
 # MAGIC Print all active streams to check that "hourly_traffic" is no longer there
 
 # COMMAND ----------

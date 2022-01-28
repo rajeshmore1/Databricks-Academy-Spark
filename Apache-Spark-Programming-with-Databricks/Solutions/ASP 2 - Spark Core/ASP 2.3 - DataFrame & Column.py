@@ -30,7 +30,7 @@
 
 # COMMAND ----------
 
-events_df = spark.read.parquet(events_path)
+events_df = spark.read.format("delta").load(events_path)
 display(events_df)
 
 # COMMAND ----------
@@ -45,9 +45,9 @@ display(events_df)
 
 from pyspark.sql.functions import col
 
-events_df.device
-events_df["device"]
-col("device")
+print(events_df.device)
+print(events_df["device"])
+print(col("device"))
 
 # COMMAND ----------
 

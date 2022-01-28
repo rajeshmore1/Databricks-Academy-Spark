@@ -34,8 +34,8 @@
 
 # COMMAND ----------
 
-# ANSWER
-events_df = spark.table("events")
+# TODO
+events_df = FILL_IN
 
 # COMMAND ----------
 
@@ -44,13 +44,7 @@ events_df = spark.table("events")
 
 # COMMAND ----------
 
-# ANSWER
-display(events_df)
-
-# COMMAND ----------
-
-# ANSWER
-events_df.printSchema()
+# TODO
 
 # COMMAND ----------
 
@@ -62,11 +56,10 @@ events_df.printSchema()
 
 # COMMAND ----------
 
-# ANSWER
+# TODO
 mac_df = (events_df
-         .where("device == 'macOS'")
-         .sort("event_timestamp")
-        )
+          .FILL_IN
+         )
 
 # COMMAND ----------
 
@@ -75,13 +68,13 @@ mac_df = (events_df
 
 # COMMAND ----------
 
-# ANSWER
-num_rows = mac_df.count()
-rows = mac_df.take(5)
+# TODO
+num_rows = mac_df.FILL_IN
+rows = mac_df.FILL_IN
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **4.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -99,19 +92,14 @@ assert(type(rows[0]) == Row)
 
 # COMMAND ----------
 
-# ANSWER
-mac_sql_df = spark.sql("""
-SELECT *
-FROM events
-WHERE device = 'macOS'
-ORDER By event_timestamp
-""")
+# TODO
+mac_sql_df = spark.FILL_IN
 
 display(mac_sql_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **5.1: CHECK YOUR WORK**
 # MAGIC - You should only see **`macOS`** values in the **`device`** column
 # MAGIC - The fifth row should be an event with timestamp **`1592539226602157`**
 

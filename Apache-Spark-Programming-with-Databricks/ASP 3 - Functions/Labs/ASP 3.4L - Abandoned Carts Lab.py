@@ -25,7 +25,7 @@
 
 # MAGIC %md
 # MAGIC ### Setup
-# MAGIC Run the cells below to create DataFrames **`salesDF`**, **`usersDF`**, and **`eventsDF`**.
+# MAGIC Run the cells below to create DataFrames **`sales_df`**, **`users_df`**, and **`events_df`**.
 
 # COMMAND ----------
 
@@ -34,24 +34,24 @@
 # COMMAND ----------
 
 # sale transactions at BedBricks
-sales_df = spark.read.parquet(sales_path)
+sales_df = spark.read.format("delta").load(sales_path)
 display(sales_df)
 
 # COMMAND ----------
 
 # user IDs and emails at BedBricks
-users_df = spark.read.parquet(users_path)
+users_df = spark.read.format("delta").load(users_path)
 display(users_df)
 
 # COMMAND ----------
 
 # events logged on the BedBricks website
-events_df = spark.read.parquet(events_path)
+events_df = spark.read.format("delta").load(events_path)
 display(events_df)
 
 # COMMAND ----------
 
-# MAGIC %md ### 1-A: Get emails of converted users from transactions
+# MAGIC %md ### 1: Get emails of converted users from transactions
 # MAGIC - Select the **`email`** column in **`sales_df`** and remove duplicates
 # MAGIC - Add a new column **`converted`** with the value **`True`** for all rows
 # MAGIC 
@@ -61,13 +61,14 @@ display(events_df)
 
 # TODO
 from pyspark.sql.functions import *
+
 converted_users_df = (sales_df.FILL_IN
-)
+                     )
 display(converted_users_df)
 
 # COMMAND ----------
 
-# MAGIC %md #### 1-B: Check Your Work
+# MAGIC %md #### 1.1: Check Your Work
 # MAGIC 
 # MAGIC Run the following cell to verify that your solution works:
 
@@ -86,7 +87,7 @@ assert converted_users_df.select(col("converted")).first()[0] == True, "converte
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 2-A: Join emails with user IDs
+# MAGIC ### 2: Join emails with user IDs
 # MAGIC - Perform an outer join on **`converted_users_df`** and **`users_df`** with the **`email`** field
 # MAGIC - Filter for users where **`email`** is not null
 # MAGIC - Fill null values in **`converted`** as **`False`**
@@ -97,12 +98,12 @@ assert converted_users_df.select(col("converted")).first()[0] == True, "converte
 
 # TODO
 conversions_df = (users_df.FILL_IN
-)
+                 )
 display(conversions_df)
 
 # COMMAND ----------
 
-# MAGIC %md #### 2-B: Check Your Work
+# MAGIC %md #### 2.1: Check Your Work
 # MAGIC 
 # MAGIC Run the following cell to verify that your solution works:
 
@@ -125,7 +126,7 @@ assert conversions_df.filter(col("converted") == False).count() == expected_fals
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 3-A: Get cart item history for each user
+# MAGIC ### 3: Get cart item history for each user
 # MAGIC - Explode the **`items`** field in **`events_df`** with the results replacing the existing **`items`** field
 # MAGIC - Group by **`user_id`**
 # MAGIC   - Collect a set of all **`items.item_id`** objects for each user and alias the column to "cart"
@@ -141,7 +142,7 @@ display(carts_df)
 
 # COMMAND ----------
 
-# MAGIC %md #### 3-B: Check Your Work
+# MAGIC %md #### 3.1: Check Your Work
 # MAGIC 
 # MAGIC Run the following cell to verify that your solution works:
 
@@ -160,7 +161,7 @@ assert carts_df.select(col("user_id")).drop_duplicates().count() == expected_cou
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 4-A: Join cart item history with emails
+# MAGIC ### 4: Join cart item history with emails
 # MAGIC - Perform a left join on **`conversions_df`** and **`carts_df`** on the **`user_id`** field
 # MAGIC 
 # MAGIC Save result as **`email_carts_df`**.
@@ -173,7 +174,7 @@ display(email_carts_df)
 
 # COMMAND ----------
 
-# MAGIC %md #### 4-B: Check Your Work
+# MAGIC %md #### 4.1: Check Your Work
 # MAGIC 
 # MAGIC Run the following cell to verify that your solution works:
 
@@ -194,7 +195,7 @@ assert email_carts_df.filter(col("cart").isNull()).count() == expected_cart_null
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 5-A: Filter for emails with abandoned cart items
+# MAGIC ### 5: Filter for emails with abandoned cart items
 # MAGIC - Filter **`email_carts_df`** for users where **`converted`** is False
 # MAGIC - Filter for users with non-null carts
 # MAGIC 
@@ -209,7 +210,7 @@ display(abandoned_carts_df)
 
 # COMMAND ----------
 
-# MAGIC %md #### 5-B: Check Your Work
+# MAGIC %md #### 5.1: Check Your Work
 # MAGIC 
 # MAGIC Run the following cell to verify that your solution works:
 
@@ -226,19 +227,19 @@ assert abandoned_carts_df.count() == expected_count, "Counts do not match"
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 6-A: Bonus Activity
+# MAGIC ### 6: Bonus Activity
 # MAGIC Plot number of abandoned cart items by product
 
 # COMMAND ----------
 
 # TODO
 abandoned_items_df = (abandoned_carts_df.FILL_IN
-)
+                     )
 display(abandoned_items_df)
 
 # COMMAND ----------
 
-# MAGIC %md #### 6-B: Check Your Work
+# MAGIC %md #### 6.1: Check Your Work
 # MAGIC 
 # MAGIC Run the following cell to verify that your solution works:
 

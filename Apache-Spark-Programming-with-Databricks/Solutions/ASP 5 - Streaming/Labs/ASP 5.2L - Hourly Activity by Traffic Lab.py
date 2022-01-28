@@ -52,13 +52,13 @@ df = (spark
 from pyspark.sql.functions import col
 
 events_df = (df
-            .withColumn("createdAt", (col("event_timestamp") / 1e6).cast("timestamp"))
-            .withWatermark("createdAt", "2 hours")
-           )
+             .withColumn("createdAt", (col("event_timestamp") / 1e6).cast("timestamp"))
+             .withWatermark("createdAt", "2 hours")
+            )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -83,15 +83,15 @@ from pyspark.sql.functions import approx_count_distinct, hour, window
 spark.conf.set("spark.sql.shuffle.partitions", spark.sparkContext.defaultParallelism)
 
 traffic_df = (events_df
-             .groupBy("traffic_source", window(col("createdAt"), "1 hour"))
-             .agg(approx_count_distinct("user_id").alias("active_users"))
-             .select(col("traffic_source"), col("active_users"), hour(col("window.start")).alias("hour"))
-             .sort("hour")
-            )
+              .groupBy("traffic_source", window(col("createdAt"), "1 hour"))
+              .agg(approx_count_distinct("user_id").alias("active_users"))
+              .select(col("traffic_source"), col("active_users"), hour(col("window.start")).alias("hour"))
+              .sort("hour")
+             )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -115,7 +115,7 @@ display(traffic_df, streamName="hourly_traffic")
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 # MAGIC 
 # MAGIC - The bar chart should plot **`hour`** on the x-axis and **`active_users`** on the y-axis
 # MAGIC - Six bars should appear at every hour for all traffic sources
@@ -138,7 +138,7 @@ for s in spark.streams.active:
 
 # COMMAND ----------
 
-# MAGIC %md %md **CHECK YOUR WORK**  
+# MAGIC %md **4.1: CHECK YOUR WORK**  
 # MAGIC Print all active streams to check that "hourly_traffic" is no longer there
 
 # COMMAND ----------

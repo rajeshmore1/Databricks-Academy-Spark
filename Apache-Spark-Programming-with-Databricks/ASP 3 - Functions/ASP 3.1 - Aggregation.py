@@ -30,7 +30,7 @@
 
 # COMMAND ----------
 
-df = spark.read.parquet(events_path)
+df = spark.read.format("delta").load(events_path)
 display(df)
 
 # COMMAND ----------
@@ -140,10 +140,10 @@ display(state_purchases_df)
 from pyspark.sql.functions import avg, approx_count_distinct
 
 state_aggregates_df = (df
-                     .groupBy("geo.state")
-                     .agg(avg("ecommerce.total_item_quantity").alias("avg_quantity"),
-                          approx_count_distinct("user_id").alias("distinct_users"))
-                    )
+                       .groupBy("geo.state")
+                       .agg(avg("ecommerce.total_item_quantity").alias("avg_quantity"),
+                            approx_count_distinct("user_id").alias("distinct_users"))
+                      )
 
 display(state_aggregates_df)
 
@@ -164,11 +164,10 @@ display(state_aggregates_df)
 
 from pyspark.sql.functions import cos, sqrt
 
-display(
-    spark.range(10)  # Create a DataFrame with a single column called "id" with a range of integer values
-    .withColumn("sqrt", sqrt("id"))
-    .withColumn("cos", cos("id"))
-)
+display(spark.range(10)  # Create a DataFrame with a single column called "id" with a range of integer values
+        .withColumn("sqrt", sqrt("id"))
+        .withColumn("cos", cos("id"))
+       )
 
 # COMMAND ----------
 

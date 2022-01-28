@@ -31,7 +31,8 @@ from pyspark.sql.functions import approx_count_distinct, avg, col, date_format, 
 
 df = (spark
       .read
-      .parquet(events_path)
+      .format("delta")
+      .load(events_path)
       .withColumn("ts", (col("event_timestamp") / 1e6).cast("timestamp"))
       .withColumn("date", to_date("ts"))
       .groupBy("date").agg(approx_count_distinct("user_id").alias("active_users"))
@@ -71,9 +72,9 @@ label_dow_udf = spark.udf.register("label_dow", label_day_of_week)
 
 # ANSWER
 final_df = (df
-           .withColumn("day", label_dow_udf(col("day")))
-           .sort("day")
-          )
+            .withColumn("day", label_dow_udf(col("day")))
+            .sort("day")
+           )
 display(final_df)
 
 # COMMAND ----------

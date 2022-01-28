@@ -33,7 +33,7 @@
 
 # COMMAND ----------
 
-df = spark.read.parquet(events_path)
+df = spark.read.format("delta").load(events_path)
 df.rdd.getNumPartitions()
 
 # COMMAND ----------

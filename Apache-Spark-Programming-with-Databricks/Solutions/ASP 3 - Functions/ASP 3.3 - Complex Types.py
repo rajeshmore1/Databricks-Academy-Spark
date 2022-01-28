@@ -77,7 +77,7 @@
 
 # COMMAND ----------
 
-df = spark.read.parquet(sales_path)
+df = spark.read.format("delta").load(sales_path)
 display(df)
 
 # COMMAND ----------
@@ -85,10 +85,10 @@ display(df)
 from pyspark.sql.functions import *
 
 details_df = (df
-             .withColumn("items", explode("items"))
-             .select("email", "items.item_name")
-             .withColumn("details", split(col("item_name"), " "))
-            )
+              .withColumn("items", explode("items"))
+              .select("email", "items.item_name")
+              .withColumn("details", split(col("item_name"), " "))
+             )
 display(details_df)
 
 # COMMAND ----------
@@ -99,7 +99,7 @@ display(details_df)
 
 # MAGIC %md ### 2. Extract size and quality options from mattress purchases
 # MAGIC 
-# MAGIC - Filter **`detailsDF`** for records where **`details`** contains "Mattress"
+# MAGIC - Filter **`details_df`** for records where **`details`** contains "Mattress"
 # MAGIC - Add a **`size`** column by extracting the element at position 2
 # MAGIC - Add a **`quality`** column by extracting the element at position 1
 # MAGIC 
@@ -108,10 +108,10 @@ display(details_df)
 # COMMAND ----------
 
 mattress_df = (details_df
-              .filter(array_contains(col("details"), "Mattress"))
-              .withColumn("size", element_at(col("details"), 2))
-              .withColumn("quality", element_at(col("details"), 1))
-             )
+               .filter(array_contains(col("details"), "Mattress"))
+               .withColumn("size", element_at(col("details"), 2))
+               .withColumn("quality", element_at(col("details"), 1))
+              )
 display(mattress_df)
 
 # COMMAND ----------
@@ -132,10 +132,10 @@ display(mattress_df)
 # COMMAND ----------
 
 pillow_df = (details_df
-            .filter(array_contains(col("details"), "Pillow"))
-            .withColumn("size", element_at(col("details"), 1))
-            .withColumn("quality", element_at(col("details"), 2))
-           )
+             .filter(array_contains(col("details"), "Pillow"))
+             .withColumn("size", element_at(col("details"), 1))
+             .withColumn("quality", element_at(col("details"), 2))
+            )
 display(pillow_df)
 
 # COMMAND ----------
@@ -168,10 +168,10 @@ display(union_df)
 # COMMAND ----------
 
 options_df = (union_df
-             .groupBy("email")
-             .agg(collect_set("size").alias("size options"),
-                  collect_set("quality").alias("quality options"))
-            )
+              .groupBy("email")
+              .agg(collect_set("size").alias("size options"),
+                   collect_set("quality").alias("quality options"))
+             )
 display(options_df)
 
 # COMMAND ----------

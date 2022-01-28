@@ -22,11 +22,11 @@
 # MAGIC 
 # MAGIC ## Spark Core
 # MAGIC * [ASP 2.1 - Spark SQL]($./ASP 2 - Spark Core/ASP 2.1 - Spark SQL)
+# MAGIC * [ASP 2.1L - Spark SQL Lab]($./ASP 2 - Spark Core/Labs/ASP 2.1L - Spark SQL Lab)
 # MAGIC * [ASP 2.2 - Reader & Writer]($./ASP 2 - Spark Core/ASP 2.2 - Reader & Writer)
-# MAGIC * [ASP 2.2L - Spark SQL Lab]($./ASP 2 - Spark Core/Labs/ASP 2.2L - Spark SQL Lab)
+# MAGIC * [ASP 2.2L - Ingesting Data Lab]($./ASP 2 - Spark Core/Labs/ASP 2.2L - Ingesting Data Lab)
 # MAGIC * [ASP 2.3 - DataFrame & Column]($./ASP 2 - Spark Core/ASP 2.3 - DataFrame & Column)
-# MAGIC * [ASP 2.3L - Ingesting Data Lab]($./ASP 2 - Spark Core/Labs/ASP 2.3L - Ingesting Data Lab)
-# MAGIC * [ASP 2.4L - Purchase Revenues Lab]($./ASP 2 - Spark Core/Labs/ASP 2.4L - Purchase Revenues Lab)
+# MAGIC * [ASP 2.3L - Purchase Revenues Lab]($./ASP 2 - Spark Core/Labs/ASP 2.3L - Purchase Revenues Lab)
 
 # COMMAND ----------
 

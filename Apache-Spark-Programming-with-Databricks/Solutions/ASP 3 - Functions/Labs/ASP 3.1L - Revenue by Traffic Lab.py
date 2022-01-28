@@ -34,7 +34,7 @@
 from pyspark.sql.functions import col
 
 # Purchase events logged on the BedBricks website
-df = (spark.read.parquet(events_path)
+df = (spark.read.format("delta").load(events_path)
       .withColumn("revenue", col("ecommerce.purchase_revenue_in_usd"))
       .filter(col("revenue").isNotNull())
       .drop("event_name")
@@ -57,16 +57,16 @@ display(df)
 from pyspark.sql.functions import avg, col, sum
 
 traffic_df = (df
-             .groupBy("traffic_source")
-             .agg(sum(col("revenue")).alias("total_rev"),
-                  avg(col("revenue")).alias("avg_rev"))
-            )
+              .groupBy("traffic_source")
+              .agg(sum(col("revenue")).alias("total_rev"),
+                   avg(col("revenue")).alias("avg_rev"))
+             )
 
 display(traffic_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -92,7 +92,7 @@ display(top_traffic_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -113,15 +113,15 @@ assert(expected2 == result2)
 
 # ANSWER
 final_df = (top_traffic_df
-           .withColumn("avg_rev", (col("avg_rev") * 100).cast("long") / 100)
-           .withColumn("total_rev", (col("total_rev") * 100).cast("long") / 100)
-          )
+            .withColumn("avg_rev", (col("avg_rev") * 100).cast("long") / 100)
+            .withColumn("total_rev", (col("total_rev") * 100).cast("long") / 100)
+           )
 
 display(final_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -142,15 +142,15 @@ assert(expected3 == result3)
 from pyspark.sql.functions import round
 
 bonus_df = (top_traffic_df
-           .withColumn("avg_rev", round("avg_rev", 2))
-           .withColumn("total_rev", round("total_rev", 2))
-          )
+            .withColumn("avg_rev", round("avg_rev", 2))
+            .withColumn("total_rev", round("total_rev", 2))
+           )
 
 display(bonus_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **4.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -167,20 +167,20 @@ assert(expected4 == result4)
 
 # ANSWER
 chain_df = (df
-           .groupBy("traffic_source")
-           .agg(sum(col("revenue")).alias("total_rev"),
-                avg(col("revenue")).alias("avg_rev"))
-           .sort(col("total_rev").desc())
-           .limit(3)
-           .withColumn("avg_rev", round("avg_rev", 2))
-           .withColumn("total_rev", round("total_rev", 2))
-          )
+            .groupBy("traffic_source")
+            .agg(sum(col("revenue")).alias("total_rev"),
+                 avg(col("revenue")).alias("avg_rev"))
+            .sort(col("total_rev").desc())
+            .limit(3)
+            .withColumn("avg_rev", round("avg_rev", 2))
+            .withColumn("total_rev", round("total_rev", 2))
+           )
 
 display(chain_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **5.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 

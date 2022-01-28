@@ -12,7 +12,7 @@
 # MAGIC Process and append streaming data on transactions using coupons.
 # MAGIC 1. Read data stream
 # MAGIC 2. Filter for transactions with coupons codes
-# MAGIC 3. Write streaming query results to Parquet
+# MAGIC 3. Write streaming query results to Delta
 # MAGIC 4. Monitor streaming query
 # MAGIC 5. Stop streaming query
 # MAGIC 
@@ -30,13 +30,9 @@
 # MAGIC %md ### 1. Read data stream
 # MAGIC - Use the schema stored in **`schema`**
 # MAGIC - Set to process 1 file per trigger
-# MAGIC - Read from Parquet files in the source directory specified by **`sales_path`**
+# MAGIC - Read from Delta files in the source directory specified by **`sales_path`**
 # MAGIC 
 # MAGIC Assign the resulting DataFrame to **`df`**.
-
-# COMMAND ----------
-
-schema = "order_id BIGINT, email STRING, transaction_timestamp BIGINT, total_item_quantity BIGINT, purchase_revenue_in_usd DOUBLE, unique_items BIGINT, items ARRAY<STRUCT<coupon: STRING, item_id: STRING, item_name: STRING, item_revenue_in_usd: DOUBLE, price_in_usd: DOUBLE, quantity: BIGINT>>"
 
 # COMMAND ----------
 
@@ -46,7 +42,7 @@ df = (spark.FILL_IN
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -69,7 +65,7 @@ coupon_sales_df = (df.FILL_IN
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -78,8 +74,8 @@ assert "StructField(items,StructType(List(StructField(coupon" in schema_str, "it
 
 # COMMAND ----------
 
-# MAGIC %md ### 3. Write streaming query results to parquet
-# MAGIC - Configure the streaming query to write Parquet format files in "append" mode
+# MAGIC %md ### 3. Write streaming query results to Delta
+# MAGIC - Configure the streaming query to write Delta format files in "append" mode
 # MAGIC - Set the query name to "coupon_sales"
 # MAGIC - Set a trigger interval of 1 second
 # MAGIC - Set the checkpoint location to **`coupons_checkpoint_path`**
@@ -94,11 +90,11 @@ coupons_checkpoint_path = working_dir + "/coupon-sales/checkpoint"
 coupons_output_path = working_dir + "/coupon-sales/output"
 
 coupon_sales_query = (coupon_sales_df.FILL_IN
-)
+                     )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -126,7 +122,7 @@ query_status = coupon_sales_query.FILL_IN
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **4.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -145,7 +141,7 @@ coupon_sales_query.FILL_IN
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **5.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -153,7 +149,7 @@ assert not coupon_sales_query.isActive
 
 # COMMAND ----------
 
-# MAGIC %md ### 6. Verify the records were written in Parquet format
+# MAGIC %md ### 6. Verify the records were written in Delta format
 
 # COMMAND ----------
 

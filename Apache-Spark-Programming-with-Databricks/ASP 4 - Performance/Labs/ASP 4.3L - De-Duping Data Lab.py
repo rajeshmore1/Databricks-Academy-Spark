@@ -34,7 +34,7 @@
 # MAGIC <img src="https://files.training.databricks.com/images/icon_hint_32.png" alt="Hint"> The initial dataset contains 103,000 records.
 # MAGIC The de-duplicated result has 100,000 records.
 # MAGIC 
-# MAGIC Next, write the results in **Delta** format as a **single data file** to the directory given by the variable *deltaDestDir*.
+# MAGIC Next, write the results in **Delta** format as a **single data file** to the directory given by the variable **delta_dest_dir**.
 # MAGIC 
 # MAGIC <img src="https://files.training.databricks.com/images/icon_hint_32.png" alt="Hint"> Remember the relationship between the number of partitions in a DataFrame and the number of files written.
 # MAGIC 
@@ -62,10 +62,10 @@ dbutils.fs.head(f"{datasets_dir}/people/people-with-dups.txt")
 # TODO
 
 source_file = f"{datasets_dir}/people/people-with-dups.txt"
-dest_file = working_dir + "/people.parquet"
+delta_dest_dir = working_dir + "/people"
 
 # In case it already exists
-dbutils.fs.rm(dest_file, True)
+dbutils.fs.rm(delta_dest_dir, True)
 
 # Complete your work here...
 

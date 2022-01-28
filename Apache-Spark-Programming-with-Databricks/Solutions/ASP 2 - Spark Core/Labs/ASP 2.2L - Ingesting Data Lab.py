@@ -37,16 +37,17 @@ print(dbutils.fs.head(single_product_csv_file_path))
 
 products_csv_path = f"{datasets_dir}/products/products.csv"
 products_df = (spark
-              .read
-              .option("header", True)
-              .option("inferSchema", True)
-              .csv(products_csv_path))
+               .read
+               .option("header", True)
+               .option("inferSchema", True)
+               .csv(products_csv_path)
+              )
 
 products_df.printSchema()
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -69,15 +70,15 @@ user_defined_schema = StructType([
 ])
 
 products_df2 = (spark
-               .read
-               .option("header", True)
-               .schema(user_defined_schema)
-               .csv(products_csv_path)
-              )
+                .read
+                .option("header", True)
+                .schema(user_defined_schema)
+                .csv(products_csv_path)
+               )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -102,15 +103,15 @@ assert(expected1 == result1)
 ddl_schema = "`item_id` STRING,`name` STRING,`price` DOUBLE"
 
 products_df3 = (spark
-               .read
-               .option("header", True)
-               .schema(ddl_schema)
-               .csv(products_csv_path)
-              )
+                .read
+                .option("header", True)
+                .schema(ddl_schema)
+                .csv(products_csv_path)
+               )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -119,7 +120,7 @@ assert(products_df3.count() == 12)
 # COMMAND ----------
 
 # MAGIC %md ### 4. Write to Delta
-# MAGIC Write **`productsDF`** to the filepath provided in the variable **`productsOutputPath`**
+# MAGIC Write **`products_df`** to the filepath provided in the variable **`products_output_path`**
 
 # COMMAND ----------
 
@@ -134,7 +135,7 @@ products_output_path = working_dir + "/delta/products"
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **4.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 

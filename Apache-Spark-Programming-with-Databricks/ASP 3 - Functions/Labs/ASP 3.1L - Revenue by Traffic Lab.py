@@ -34,7 +34,7 @@
 from pyspark.sql.functions import col
 
 # Purchase events logged on the BedBricks website
-df = (spark.read.parquet(events_path)
+df = (spark.read.format("delta").load(events_path)
       .withColumn("revenue", col("ecommerce.purchase_revenue_in_usd"))
       .filter(col("revenue").isNotNull())
       .drop("event_name")
@@ -62,7 +62,7 @@ display(traffic_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -89,7 +89,7 @@ display(top_traffic_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -116,7 +116,7 @@ display(final_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -141,7 +141,7 @@ display(bonus_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **4.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -164,7 +164,7 @@ display(chain_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **5.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 

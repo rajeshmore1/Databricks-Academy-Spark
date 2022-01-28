@@ -245,7 +245,7 @@ display(events_df)
 # MAGIC (df.write                         
 # MAGIC   .option("compression", "snappy")
 # MAGIC   .mode("overwrite")      
-# MAGIC   .parquet(outPath)       
+# MAGIC   .parquet(output_dir)       
 # MAGIC )
 # MAGIC ```
 # MAGIC 
@@ -261,19 +261,19 @@ display(events_df)
 
 # COMMAND ----------
 
-users_output_path = working_dir + "/users.parquet"
+users_output_dir = working_dir + "/users.parquet"
 
 (users_df
  .write
  .option("compression", "snappy")
  .mode("overwrite")
- .parquet(users_output_path)
+ .parquet(users_output_dir)
 )
 
 # COMMAND ----------
 
 display(
-    dbutils.fs.ls(users_output_path)
+    dbutils.fs.ls(users_output_dir)
 )
 
 # COMMAND ----------
@@ -285,7 +285,7 @@ display(
 
 (users_df
  .write
- .parquet(users_output_path, compression="snappy", mode="overwrite")
+ .parquet(users_output_dir, compression="snappy", mode="overwrite")
 )
 
 # COMMAND ----------
@@ -298,7 +298,7 @@ display(
 
 # COMMAND ----------
 
-events_df.write.mode("overwrite").saveAsTable("events_p")
+events_df.write.mode("overwrite").saveAsTable("events")
 
 # COMMAND ----------
 
@@ -334,7 +334,7 @@ print(database_name)
 # MAGIC %md
 # MAGIC ### Write Results to a Delta Table
 # MAGIC 
-# MAGIC Write **`events_df`** with the DataFrameWriter's **`save`** method and the following configurations: Delta format, overwrite mode
+# MAGIC Write **`events_df`** with the DataFrameWriter's **`save`** method and the following configurations: Delta format & overwrite mode.
 
 # COMMAND ----------
 

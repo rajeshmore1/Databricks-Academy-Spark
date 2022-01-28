@@ -36,14 +36,10 @@
 
 # COMMAND ----------
 
-schema = "device STRING, ecommerce STRUCT<purchase_revenue_in_usd: DOUBLE, total_item_quantity: BIGINT, unique_items: BIGINT>, event_name STRING, event_previous_timestamp BIGINT, event_timestamp BIGINT, geo STRUCT<city: STRING, state: STRING>, items ARRAY<STRUCT<coupon: STRING, item_id: STRING, item_name: STRING, item_revenue_in_usd: DOUBLE, price_in_usd: DOUBLE, quantity: BIGINT>>, traffic_source STRING, user_first_touch_timestamp BIGINT, user_id STRING"
-
-# COMMAND ----------
-
 # MAGIC %md ### 1. Read data stream
 # MAGIC - Use schema stored in **`schema`**
 # MAGIC - Set to process 1 file per trigger
-# MAGIC - Read from parquet with filepath stored in **`eventsPath`**
+# MAGIC - Read from Delta with filepath stored in **`events_path`**
 # MAGIC 
 # MAGIC Assign the resulting DataFrame to **`df`**.
 
@@ -52,14 +48,14 @@ schema = "device STRING, ecommerce STRUCT<purchase_revenue_in_usd: DOUBLE, total
 # ANSWER
 df = (spark
       .readStream
-      .schema(schema)
       .option("maxFilesPerTrigger", 1)
-      .parquet(events_path)
+      .format("delta")
+      .load(events_path)
      )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -82,14 +78,14 @@ from pyspark.sql.functions import col, approx_count_distinct, count
 spark.conf.set("spark.sql.shuffle.partitions", spark.sparkContext.defaultParallelism)
 
 traffic_df = (df
-             .groupBy("traffic_source")
-             .agg(approx_count_distinct("user_id").alias("active_users"))
-             .sort("traffic_source")
-            )
+              .groupBy("traffic_source")
+              .agg(approx_count_distinct("user_id").alias("active_users"))
+              .sort("traffic_source")
+             )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -108,7 +104,7 @@ display(traffic_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 # MAGIC - You bar chart should plot **`traffic_source`** on the x-axis and **`active_users`** on the y-axis
 # MAGIC - The top three traffic sources in descending order should be **`google`**, **`facebook`**, and **`instagram`**.
 
@@ -123,17 +119,17 @@ display(traffic_df)
 
 # ANSWER
 traffic_query = (traffic_df
-                .writeStream
-                .queryName("active_users_by_traffic_p")
-                .format("memory")
-                .outputMode("complete")
-                .trigger(processingTime="1 second")
-                .start()
-               )
+                 .writeStream
+                 .queryName("active_users_by_traffic")
+                 .format("memory")
+                 .outputMode("complete")
+                 .trigger(processingTime="1 second")
+                 .start()
+                )
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **4.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -151,11 +147,11 @@ assert traffic_query.lastProgress["sink"]["description"] == "MemorySink"
 
 # MAGIC %sql
 # MAGIC -- ANSWER
-# MAGIC SELECT * FROM active_users_by_traffic_p
+# MAGIC SELECT * FROM active_users_by_traffic
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**  
+# MAGIC %md **5.1: CHECK YOUR WORK**  
 # MAGIC Your query should eventually result in the following values.
 # MAGIC 
 # MAGIC |traffic_source|active_users|
@@ -182,7 +178,7 @@ for s in spark.streams.active:
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **6.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 

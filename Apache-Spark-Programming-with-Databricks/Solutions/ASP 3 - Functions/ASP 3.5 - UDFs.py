@@ -42,7 +42,7 @@
 
 # COMMAND ----------
 
-sales_df = spark.read.parquet(sales_path)
+sales_df = spark.read.format("delta").load(sales_path)
 display(sales_df)
 
 # COMMAND ----------
@@ -124,14 +124,14 @@ def first_letter_udf(email: str) -> str:
 
 from pyspark.sql.functions import col
 
-sales_df = spark.read.parquet(f"{datasets_dir}/sales/sales.parquet")
+sales_df = spark.read.format("delta").load(f"{datasets_dir}/sales/sales.delta")
 display(sales_df.select(first_letter_udf(col("email"))))
 
 # COMMAND ----------
 
 # MAGIC %md ### Pandas/Vectorized UDFs
 # MAGIC 
-# MAGIC As of Spark 2.3, there are Pandas UDFs available in Python to improve the efficiency of UDFs. Pandas UDFs utilize Apache Arrow to speed up computation.
+# MAGIC Pandas UDFs are available in Python to improve the efficiency of UDFs. Pandas UDFs utilize Apache Arrow to speed up computation.
 # MAGIC 
 # MAGIC * <a href="https://databricks.com/blog/2017/10/30/introducing-vectorized-udfs-for-pyspark.html" target="_blank">Blog post</a>
 # MAGIC * <a href="https://spark.apache.org/docs/latest/api/python/user_guide/sql/arrow_pandas.html?highlight=arrow" target="_blank">Documentation</a>
@@ -199,7 +199,8 @@ from pyspark.sql.functions import approx_count_distinct, avg, col, date_format, 
 
 df = (spark
       .read
-      .parquet(events_path)
+      .format("delta")
+      .load(events_path)
       .withColumn("ts", (col("event_timestamp") / 1e6).cast("timestamp"))
       .withColumn("date", to_date("ts"))
       .groupBy("date").agg(approx_count_distinct("user_id").alias("active_users"))
@@ -239,9 +240,9 @@ label_dow_udf = spark.udf.register("label_dow", label_day_of_week)
 
 # ANSWER
 final_df = (df
-           .withColumn("day", label_dow_udf(col("day")))
-           .sort("day")
-          )
+            .withColumn("day", label_dow_udf(col("day")))
+            .sort("day")
+           )
 display(final_df)
 
 # COMMAND ----------

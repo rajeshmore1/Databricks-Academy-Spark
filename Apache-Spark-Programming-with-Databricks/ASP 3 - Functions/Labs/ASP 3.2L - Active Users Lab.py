@@ -31,7 +31,8 @@ from pyspark.sql.functions import col
 
 df = (spark
       .read
-      .parquet(events_path)
+      .format("delta")
+      .load(events_path)
       .select("user_id", col("event_timestamp").alias("ts"))
      )
 
@@ -52,7 +53,7 @@ display(datetime_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **1.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -64,7 +65,7 @@ expected1a = StructType([StructField("user_id", StringType(), True),
 
 result1a = datetime_df.schema
 
-assert expected1a == result1a, "datetimeDF does not have the expected schema"
+assert expected1a == result1a, "datetime_df does not have the expected schema"
 
 # COMMAND ----------
 
@@ -73,7 +74,7 @@ import datetime
 expected1b = datetime.date(2020, 6, 19)
 result1b = datetime_df.sort("date").first().date
 
-assert expected1b == result1b, "datetimeDF does not have the expected date values"
+assert expected1b == result1b, "datetime_df does not have the expected date values"
 
 # COMMAND ----------
 
@@ -94,7 +95,7 @@ display(active_users_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **2.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -105,7 +106,7 @@ expected2a = StructType([StructField("date", DateType(), True),
 
 result2a = active_users_df.schema
 
-assert expected2a == result2a, "activeUsersDF does not have the expected schema"
+assert expected2a == result2a, "active_users_df does not have the expected schema"
 
 # COMMAND ----------
 
@@ -113,7 +114,7 @@ expected2b = [(datetime.date(2020, 6, 19), 251573), (datetime.date(2020, 6, 20),
 
 result2b = [(row.date, row.active_users) for row in active_users_df.take(5)]
 
-assert expected2b == result2b, "activeUsersDF does not have the expected values"
+assert expected2b == result2b, "active_users_df does not have the expected values"
 
 # COMMAND ----------
 
@@ -132,7 +133,7 @@ display(active_dow_df)
 
 # COMMAND ----------
 
-# MAGIC %md **CHECK YOUR WORK**
+# MAGIC %md **3.1: CHECK YOUR WORK**
 
 # COMMAND ----------
 
@@ -143,7 +144,7 @@ expected3a = StructType([StructField("day", StringType(), True),
 
 result3a = active_dow_df.schema
 
-assert expected3a == result3a, "activeDowDF does not have the expected schema"
+assert expected3a == result3a, "active_dow_df does not have the expected schema"
 
 # COMMAND ----------
 
@@ -151,7 +152,7 @@ expected3b = [("Fri", 247180.66666666666), ("Mon", 238195.5), ("Sat", 278482.0),
 
 result3b = [(row.day, row.avg_users) for row in active_dow_df.sort("day").collect()]
 
-assert expected3b == result3b, "activeDowDF does not have the expected values"
+assert expected3b == result3b, "active_dow_df does not have the expected values"
 
 # COMMAND ----------
 

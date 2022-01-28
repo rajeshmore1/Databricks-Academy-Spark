@@ -16,7 +16,7 @@ def path_exists(path):
 def install_datasets(reinstall=False):
     working_dir = working_dir_root
     course_name = "apache-spark-programming-with-databricks"
-    version = "v01"
+    version = "v02"
     min_time = "2 minute"
     max_time = "5 minutes"
   

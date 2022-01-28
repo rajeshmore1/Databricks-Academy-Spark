@@ -67,10 +67,10 @@ display(files)
 
 # MAGIC %sql
 # MAGIC -- ANSWER
-# MAGIC CREATE TABLE IF NOT EXISTS users USING parquet OPTIONS (path "${c.users_path}");
-# MAGIC CREATE TABLE IF NOT EXISTS sales USING parquet OPTIONS (path "${c.sales_path}");
-# MAGIC CREATE TABLE IF NOT EXISTS products USING parquet OPTIONS (path "${c.products_path}");
-# MAGIC CREATE TABLE IF NOT EXISTS events USING parquet OPTIONS (path "${c.events_path}");
+# MAGIC CREATE TABLE IF NOT EXISTS users USING delta OPTIONS (path "${c.users_path}");
+# MAGIC CREATE TABLE IF NOT EXISTS sales USING delta OPTIONS (path "${c.sales_path}");
+# MAGIC CREATE TABLE IF NOT EXISTS products USING delta OPTIONS (path "${c.products_path}");
+# MAGIC CREATE TABLE IF NOT EXISTS events USING delta OPTIONS (path "${c.events_path}");
 
 # COMMAND ----------
 
@@ -89,7 +89,7 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %md 
-# MAGIC #### Q1: What products are available for purchase at BedBricks?
+# MAGIC #### 4.1: What products are available for purchase at BedBricks?
 # MAGIC 
 # MAGIC The **`products`** dataset contains the ID, name, and price of products on the BedBricks retail site.
 # MAGIC 
@@ -111,7 +111,7 @@ display(files)
 
 # COMMAND ----------
 
-# MAGIC %md #### Q2: What is the average purchase revenue for a transaction at BedBricks?
+# MAGIC %md #### 4.2: What is the average purchase revenue for a transaction at BedBricks?
 # MAGIC 
 # MAGIC The **`sales`** dataset contains order information representing successfully processed sales.  
 # MAGIC Most fields correspond directly with fields from the clickstream data associated with a sale finalization event.
@@ -139,7 +139,7 @@ display(files)
 
 # COMMAND ----------
 
-# MAGIC %md #### Q3: What types of events are recorded on the BedBricks website?
+# MAGIC %md #### 4.3: What types of events are recorded on the BedBricks website?
 # MAGIC 
 # MAGIC The **`events`** dataset contains two weeks worth of parsed JSON records, created by consuming updates to an operational database.  
 # MAGIC Records are received whenever: (1) a new user visits the site, (2) a user provides their email for the first time.
