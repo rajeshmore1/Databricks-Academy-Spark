@@ -7,6 +7,10 @@
 
 # COMMAND ----------
 
+
+
+# COMMAND ----------
+
 # MAGIC %md # Reader & Writer
 # MAGIC ##### Objectives
 # MAGIC 1. Read from CSV files
@@ -32,9 +36,7 @@
 # MAGIC %md ## DataFrameReader
 # MAGIC Interface used to load a DataFrame from external storage systems
 # MAGIC 
-# MAGIC ```
-# MAGIC spark.read.parquet("path/to/files")
-# MAGIC ```
+# MAGIC **`spark.read.parquet("path/to/files")`**
 # MAGIC 
 # MAGIC DataFrameReader is accessible through the SparkSession attribute **`read`**. This class includes methods to load DataFrames from different external storage systems.
 

@@ -21,7 +21,7 @@
 
 # COMMAND ----------
 
-sales_df = spark.read.parquet(datasets_dir + "/sales/sales.parquet/) 
+sales_df = spark.read.parquet(datasets_dir + "/sales/sales.parquet") 
 delta_sales_path = working_dir + "/delta-sales"
 
 # COMMAND ----------

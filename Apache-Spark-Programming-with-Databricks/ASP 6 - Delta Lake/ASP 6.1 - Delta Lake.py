@@ -33,7 +33,7 @@
 
 # COMMAND ----------
 
-events_df = spark.read.parquet(datasets_dir + "/events/events.parquet/")
+events_df = spark.read.format("parquet").load(f"{datasets_dir}/events/events.parquet")
 display(events_df)
 
 # COMMAND ----------
@@ -43,7 +43,7 @@ display(events_df)
 
 # COMMAND ----------
 
-delta_path = working_dir + "/delta-events"
+delta_path = f"{working_dir}/delta-events"
 events_df.write.format("delta").mode("overwrite").save(delta_path)
 
 # COMMAND ----------
@@ -97,7 +97,7 @@ display(dbutils.fs.ls(delta_path))
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(delta_path + "/_delta_log/"))
+display(dbutils.fs.ls(f"{delta_path}/_delta_log/"))
 
 # COMMAND ----------
 
@@ -112,7 +112,7 @@ display(dbutils.fs.ls(delta_path + "/_delta_log/"))
 
 # COMMAND ----------
 
-display(spark.read.json(delta_path + "/_delta_log/00000000000000000000.json"))
+display(spark.read.json(f"{delta_path}/_delta_log/00000000000000000000.json"))
 
 # COMMAND ----------
 
@@ -122,7 +122,7 @@ display(spark.read.json(delta_path + "/_delta_log/00000000000000000000.json"))
 
 # COMMAND ----------
 
-display(spark.read.json(delta_path + "/_delta_log/00000000000000000001.json"))
+display(spark.read.json(f"{delta_path}/_delta_log/00000000000000000001.json"))
 
 # COMMAND ----------
 
@@ -130,7 +130,7 @@ display(spark.read.json(delta_path + "/_delta_log/00000000000000000001.json"))
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(delta_path + "/state=CA/"))
+display(dbutils.fs.ls(f"{delta_path}/state=CA/"))
 
 # COMMAND ----------
 
@@ -167,7 +167,7 @@ display(df)
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(delta_path + "/state=CA/"))
+display(dbutils.fs.ls(f"{delta_path}/state=CA/"))
 
 # COMMAND ----------
 
